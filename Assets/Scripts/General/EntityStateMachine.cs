@@ -9,7 +9,9 @@ namespace CuttingEdge
 {
     public class EntityStateMachine : MonoBehaviour
     {
+        [SerializableType.RequiredType(typeof(EntityState), "CuttingEdge.EntityStates")]
         public SerializableType initialState = typeof(EntityState);
+        [SerializableType.RequiredType(typeof(EntityState), "CuttingEdge.EntityStates")]
         public SerializableType mainState = typeof(EntityState);
         public EntityState state { get; private set; }
         private EntityState nextState;
@@ -52,6 +54,15 @@ namespace CuttingEdge
         public void SetNextStateToMain()
         {
             SetNextState(mainState);
+        }
+        public bool TryInterruptState(EntityState newState, InterruptPriority interruptPriority)
+        {
+            if (state == null || state.GetInterruptPriority() <= interruptPriority)
+            {
+                SetNextState(newState);
+                return true;
+            }
+            return false;
         }
         private void SetState(EntityState newState)
         {

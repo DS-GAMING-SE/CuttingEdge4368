@@ -72,6 +72,26 @@ namespace DSGameUtils
         public static implicit operator Type(SerializableType x) => x.type;
 
         public static implicit operator SerializableType(Type x) => new SerializableType(x);
+
+#if UNITY_EDITOR
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
+        public class RequiredTypeAttribute : Attribute
+        {
+            public Type requiredType;
+
+            public string namespaceOverride;
+
+            public RequiredTypeAttribute(Type type)
+            {
+                requiredType = type;
+            }
+            public RequiredTypeAttribute(Type type, string namespaceOverride)
+            {
+                requiredType = type;
+                this.namespaceOverride = namespaceOverride;
+            }
+        }
+#endif
     }
 #if UNITY_EDITOR
     // TODO: Make an attribute that lets you specify a base type the serializabletype must be
@@ -81,18 +101,25 @@ namespace DSGameUtils
     {
         string typeName = "";
         SerializedProperty typeNameProperty;
-        string defaultNamespace = "CuttingEdge";
+        string defaultNamespace = "";
         GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
         bool init;
         const float BUTTON_WIDTH = 0.2f;
+        SerializableType.RequiredTypeAttribute requiredTypeAttribute;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
             EditorGUI.BeginChangeCheck();
             typeNameProperty = property.FindPropertyRelative("_typeName");
-            int namespaceLength = string.IsNullOrEmpty(defaultNamespace) ? 0 : defaultNamespace.Length + 1;
-            if (!init) typeName = string.IsNullOrEmpty(typeNameProperty.stringValue) ? "" : typeNameProperty.stringValue.Substring(namespaceLength, typeNameProperty.stringValue.IndexOf(", ") - namespaceLength);
+            if (!init)
+            {
+                Attribute attribute = fieldInfo.GetCustomAttribute(typeof(SerializableType.RequiredTypeAttribute));
+                if (attribute != null) requiredTypeAttribute = (SerializableType.RequiredTypeAttribute)attribute;
+                if (requiredTypeAttribute != null && !string.IsNullOrEmpty(requiredTypeAttribute.namespaceOverride)) defaultNamespace = requiredTypeAttribute.namespaceOverride;
+                int namespaceLength = string.IsNullOrEmpty(defaultNamespace) ? 0 : defaultNamespace.Length + 1;
+                typeName = string.IsNullOrEmpty(typeNameProperty.stringValue) ? "" : typeNameProperty.stringValue.Substring(namespaceLength, typeNameProperty.stringValue.IndexOf(", ") - namespaceLength);
+            }
             init = true;
             typeName = EditorGUI.DelayedTextField(new Rect(position.x, position.y, position.width * (1-BUTTON_WIDTH), position.height - EditorGUIUtility.singleLineHeight), label, typeName);
 
@@ -107,8 +134,8 @@ namespace DSGameUtils
 
             if (update)
             {
-                Type type = Type.GetType(defaultNamespace + "." + typeName);
-                if (type != null)
+                Type type = Type.GetType(defaultNamespace + (defaultNamespace.Length > 0 ? "." : "") + typeName);
+                if (type != null && (requiredTypeAttribute == null || requiredTypeAttribute.requiredType.IsAssignableFrom(type)))
                 {
                     typeNameProperty.stringValue = type.AssemblyQualifiedName;
                     buttonStyle.normal.textColor = Color.green;
