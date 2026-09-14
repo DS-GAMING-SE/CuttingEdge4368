@@ -9,6 +9,7 @@ namespace CuttingEdge.EntityStates
     public class EntityState
     {
         public EntityStateMachine outer;
+        public EntityStateConfiguration config;
         public GameObject gameObject => outer.gameObject;
         public Transform transform => outer.transform;
         public float fixedAge { get; private set; }

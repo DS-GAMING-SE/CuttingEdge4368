@@ -94,8 +94,6 @@ namespace DSGameUtils
 #endif
     }
 #if UNITY_EDITOR
-    // TODO: Make an attribute that lets you specify a base type the serializabletype must be
-    // Include a field that can change defaultNamespace? (For EntityState convenience)
     [CustomPropertyDrawer(typeof(SerializableType), true)]
     public class SerializableTypeDrawer : PropertyDrawer
     {
@@ -121,15 +119,42 @@ namespace DSGameUtils
                 typeName = string.IsNullOrEmpty(typeNameProperty.stringValue) ? "" : typeNameProperty.stringValue.Substring(namespaceLength, typeNameProperty.stringValue.IndexOf(", ") - namespaceLength);
             }
             init = true;
-            typeName = EditorGUI.DelayedTextField(new Rect(position.x, position.y, position.width * (1-BUTTON_WIDTH), position.height - EditorGUIUtility.singleLineHeight), label, typeName);
+            Rect typeNameRect = new Rect(position.x, position.y, position.width * (1 - BUTTON_WIDTH), position.height - EditorGUIUtility.singleLineHeight);
+            typeName = EditorGUI.DelayedTextField(typeNameRect, label, typeName);
 
             EditorGUI.indentLevel = 1;
-            defaultNamespace = EditorGUI.DelayedTextField(new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight, position.width, position.height - EditorGUIUtility.singleLineHeight),
-                "Namespace", defaultNamespace);
+            Rect namespaceRect = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight, position.width, position.height - EditorGUIUtility.singleLineHeight);
+            defaultNamespace = EditorGUI.DelayedTextField(namespaceRect, "Namespace", defaultNamespace);
             EditorGUI.indentLevel = 0;
 
             bool update = false;
-            update = EditorGUI.EndChangeCheck();
+            if (typeNameRect.Contains(Event.current.mousePosition) || namespaceRect.Contains(Event.current.mousePosition))
+            {
+                switch (Event.current.type)
+                {
+                    case EventType.DragUpdated:
+                        DragAndDrop.visualMode = DragAndDrop.objectReferences[0] && DragAndDrop.objectReferences[0] is MonoScript ? DragAndDropVisualMode.Link : DragAndDropVisualMode.Rejected;
+                        Event.current.Use();
+                        break;
+                    case EventType.DragPerform:
+                        DragAndDrop.AcceptDrag();
+                        if (DragAndDrop.objectReferences[0] && DragAndDrop.objectReferences[0] is MonoScript script)
+                        {
+                            typeName = script.GetClass().FullName;
+                            if (defaultNamespace.Length > 0 && typeName.StartsWith(defaultNamespace))
+                            {
+                                typeName = typeName.Remove(0, defaultNamespace.Length + 1);
+                            }
+                            else
+                            {
+                                defaultNamespace = "";
+                            }
+                            update = true;
+                        }
+                        break;
+                }
+            }
+            update = update || EditorGUI.EndChangeCheck();
             update = update || GUI.Button(new Rect(position.x + (position.width * (1 - BUTTON_WIDTH)), position.y, position.width * BUTTON_WIDTH, position.height - EditorGUIUtility.singleLineHeight), "Validate", buttonStyle);
 
             if (update)

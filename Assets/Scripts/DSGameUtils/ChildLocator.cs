@@ -13,7 +13,7 @@ namespace DSGameUtils
         [SerializeField]
         private NameChild[] children = new NameChild[0];
 
-        public GameObject FindChild(string name)
+        public Transform FindChild(string name)
         {
             return GetChild(FindChildIndex(name));
         }
@@ -28,17 +28,17 @@ namespace DSGameUtils
             }
             return -1;
         }
-        public GameObject GetChild(int index)
+        public Transform GetChild(int index)
         {
             if (index < 0 || index >= children.Length) return null;
-            return children[index].gameObject;
+            return children[index].transform;
         }
 
         [Serializable]
         private struct NameChild
         {
             public string name;
-            public GameObject gameObject;
+            public Transform transform;
         }
 
 #if UNITY_EDITOR
@@ -51,12 +51,12 @@ namespace DSGameUtils
                 var nameField = property.FindPropertyRelative("name");
                 EditorGUI.PropertyField(new Rect(position.x, position.y, position.width, position.height - EditorGUIUtility.singleLineHeight), nameField);
                 EditorGUI.BeginChangeCheck();
-                var gameObjectField = property.FindPropertyRelative("gameObject");
+                var transformField = property.FindPropertyRelative("transform");
                 EditorGUI.indentLevel++;
-                EditorGUI.PropertyField(new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight, position.width, position.height - EditorGUIUtility.singleLineHeight), gameObjectField);
-                if (EditorGUI.EndChangeCheck() && gameObjectField.objectReferenceValue)
+                EditorGUI.PropertyField(new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight, position.width, position.height - EditorGUIUtility.singleLineHeight), transformField);
+                if (EditorGUI.EndChangeCheck() && transformField.objectReferenceValue)
                 {
-                    nameField.stringValue = gameObjectField.objectReferenceValue.name;
+                    nameField.stringValue = transformField.objectReferenceValue.name;
                 }
                 EditorGUI.indentLevel--;
                 EditorGUI.EndProperty();

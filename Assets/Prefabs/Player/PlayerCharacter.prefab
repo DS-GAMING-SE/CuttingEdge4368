@@ -86,7 +86,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   children:
   - name: Model
-    gameObject: {fileID: 2067971760005702190}
+    transform: {fileID: 1968928054825218622}
 --- !u!114 &5585248234355184754
 MonoBehaviour:
   m_ObjectHideFlags: 0

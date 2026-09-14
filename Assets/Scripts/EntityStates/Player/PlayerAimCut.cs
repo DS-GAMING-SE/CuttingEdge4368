@@ -26,7 +26,7 @@ namespace CuttingEdge.EntityStates.Player
                 }
                 else
                 {
-                    outer.SetNextState(new PlayerCut { startScreenPosition = startScreenPosition, endPosition = Input.mousePosition });
+                    outer.SetNextState(new PlayerCut { startScreenPosition = startScreenPosition, endScreenPosition = Input.mousePosition });
                 }
             }
         }
