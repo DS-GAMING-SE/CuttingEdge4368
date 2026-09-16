@@ -16,8 +16,16 @@ public class EnemyHurtBox : MonoBehaviour, ICuttable
         SlicedHull slice = cutGameObject.Slice(position, normal, cutMaterial);
         if (slice != null)
         {
-            slice.CreateLowerHull(cutGameObject, cutMaterial);
-            slice.CreateUpperHull(cutGameObject, cutMaterial);
+            GameObject lowerHull = slice.CreateLowerHull(cutGameObject, cutMaterial);
+            if (lowerHull && lowerHull.TryGetComponent<Rigidbody>(out var lowerRigidBody))
+            {
+                lowerRigidBody.AddForce(normal * -5, ForceMode.Impulse);
+            }
+            GameObject upperHull = slice.CreateUpperHull(cutGameObject, cutMaterial);
+            if (upperHull && upperHull.TryGetComponent<Rigidbody>(out var upperRigidBody))
+            {
+                upperRigidBody.AddForce(normal * 5, ForceMode.Impulse);
+            }
             GameObject.Destroy(cutGameObject); //replace with repooling
             return true;
         }

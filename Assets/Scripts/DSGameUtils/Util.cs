@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace DSGameUtils 
@@ -35,6 +36,16 @@ namespace DSGameUtils
         public static string ToStringPercent(this float num)
         {
             return (Mathf.Floor(num * 100)).ToString() + "%";
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 ToVector3XY(this Vector2 vector2)
+        {
+            return new Vector3(vector2.x, vector2.y, 0);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 ToVector3XZ(this Vector2 vector2)
+        {
+            return new Vector3(vector2.x, 0, vector2.y);
         }
     }
 }

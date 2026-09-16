@@ -21,12 +21,12 @@ namespace DSGameUtils.Pools
         }
         public Pool(int startCount, int capacity)
         {
-            unused = new Stack<T>(capacity);
+            unused = new Stack<T>(Math.Max(startCount, capacity));
             for (int i = 0; i < startCount; i++)
             {
                 unused.Push(CreateNewPooledObject());
             }
-            inUse = new List<T>(capacity);
+            inUse = new List<T>(Math.Max(startCount, capacity));
         }
         public virtual T Get()
         {

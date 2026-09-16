@@ -12,6 +12,9 @@ namespace CuttingEdge
         public static Plane playerPlane;
         public float width { get; private set; }
         public float height { get; private set; }
+        private const float PADDING_PERCENT = 0.1f;
+        public float widthPadded { get; private set; }
+        public float heightPadded { get; private set; }
         public float distanceFromCamera { get { return (Camera.main.transform.position - transform.position).magnitude; } }
         private Vector3[] corners = new Vector3[4];
         public PlaneType planeType { get { return _planeType; } }
@@ -32,6 +35,8 @@ namespace CuttingEdge
                 Camera.main.CalculateFrustumCorners(new Rect(0, 0, 1, 1), distance, Camera.MonoOrStereoscopicEye.Mono, corners);
                 height = (corners[1] - corners[0]).magnitude;
                 width = (corners[0] - corners[3]).magnitude;
+                heightPadded = height - (Mathf.Max(height, width) * PADDING_PERCENT);
+                widthPadded = width - (Mathf.Max(height, width) * PADDING_PERCENT);
             }
             transform.hasChanged = false;
         }
@@ -69,6 +74,10 @@ namespace CuttingEdge
         public Vector3 GetPositionFromScreenPosition(Vector2 screenPosition)
         {
             return Camera.main.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, distanceFromCamera));
+        }
+        public Vector3 ClampPositionToPaddedPlane(Vector3 position)
+        {
+            return new Vector3(Mathf.Clamp(position.x, widthPadded / -2, widthPadded / 2), Mathf.Clamp(position.y, heightPadded / -2, heightPadded / 2), position.z);
         }
         private void OnDrawGizmosSelected()
         {

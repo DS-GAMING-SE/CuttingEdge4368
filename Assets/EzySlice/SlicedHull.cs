@@ -28,6 +28,7 @@ namespace EzySlice {
                 newObject.transform.localPosition = original.transform.localPosition;
                 newObject.transform.localRotation = original.transform.localRotation;
                 newObject.transform.localScale = original.transform.localScale;
+                newObject.transform.SetParent(original.transform.parent, false);
 
                 Material[] shared = original.GetComponent<MeshRenderer>().sharedMaterials;
                 Mesh mesh = original.GetComponent<MeshFilter>().sharedMesh;
@@ -67,6 +68,7 @@ namespace EzySlice {
                 newObject.transform.localPosition = original.transform.localPosition;
                 newObject.transform.localRotation = original.transform.localRotation;
                 newObject.transform.localScale = original.transform.localScale;
+                newObject.transform.SetParent(original.transform.parent, false);
 
                 Material[] shared = original.GetComponent<MeshRenderer>().sharedMaterials;
                 Mesh mesh = original.GetComponent<MeshFilter>().sharedMesh;
@@ -128,12 +130,8 @@ namespace EzySlice {
                 return null;
             }
 
-            GameObject newObject = new GameObject(name);
-
-            newObject.AddComponent<MeshRenderer>();
-            MeshFilter filter = newObject.AddComponent<MeshFilter>();
-
-            filter.mesh = hull;
+            GameObject newObject = EffectManager.CreateOrGetPooledEffect(Resources.Load<GameObject>("GenericCutHull"));
+            newObject.GetComponent<MeshFilter>().mesh = hull;
 
             return newObject;
         }

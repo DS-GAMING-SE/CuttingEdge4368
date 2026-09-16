@@ -47,7 +47,7 @@ namespace CuttingEdge.EntityStates
             Selection.activeObject = newObject;
         }
         [ContextMenu("Update Config")]
-        void UpdateConfig()
+        public void UpdateConfig()
         {
             IEnumerable<FieldInfo> fields = stateType.type.GetFields(BindingFlags.Public | BindingFlags.NonPublic).OrderBy(f => f.Name);
             foreach (FieldInfo field in fields)

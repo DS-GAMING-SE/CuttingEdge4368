@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DSGameUtils;
 using System.Runtime.CompilerServices;
+using UnityEngine.InputSystem;
+using System;
 
 namespace CuttingEdge
 {
@@ -15,7 +17,12 @@ namespace CuttingEdge
         public SerializableType mainState = typeof(EntityState);
         public EntityState state { get; private set; }
         private EntityState nextState;
-
+        [NonSerialized]
+        public InputBank inputBank;
+        private void Awake()
+        {
+            inputBank = gameObject.GetComponent<InputBank>();
+        }
         private void OnEnable()
         {
             SetState(initialState.CreateInstanceOfType<EntityState>());

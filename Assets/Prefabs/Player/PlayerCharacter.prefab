@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6523161222495834183}
   - component: {fileID: 851048695787257660}
   - component: {fileID: 5585248234355184754}
+  - component: {fileID: 5102278008061282931}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -54,6 +55,7 @@ MonoBehaviour:
   mainState:
     _typeName: CuttingEdge.EntityStates.Player.PlayerMainState, Assembly-CSharp,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  inputBank: {fileID: 0}
 --- !u!114 &6523161222495834183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,6 +74,7 @@ MonoBehaviour:
   mainState:
     _typeName: CuttingEdge.EntityStates.EntityState, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  inputBank: {fileID: 0}
 --- !u!114 &851048695787257660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,6 +107,64 @@ MonoBehaviour:
     component: {fileID: -8303087310687374338}
   - name: WeaponStateMachine
     component: {fileID: 6523161222495834183}
+--- !u!114 &5102278008061282931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791937708645514675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c814ab0a8f5f044fb794de75ed14f5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputActions: {fileID: -944628639613478452, guid: 5508ba1c5ebf09c49bd990e2acdbc17a, type: 3}
+  aimCut:
+    m_Name: Aim Cut
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: ba3f19ba-2b7e-4534-bfa4-8131ac87a5dc
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  cut:
+    m_Name: Cut
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 284cd938-4ca1-4e40-af70-e69db0a5844a
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  cancelCut:
+    m_Name: Cancel Cut
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 4c46bc6b-6a57-44be-a539-3c32317ae207
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  parry:
+    m_Name: Parry
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: f1d4cf9f-350f-482d-bbbb-09f684e69ad8
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  move:
+    m_Name: Move
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 69169935-393b-4a5b-ba90-4a05c175693a
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
 --- !u!1 &2067971760005702190
 GameObject:
   m_ObjectHideFlags: 0

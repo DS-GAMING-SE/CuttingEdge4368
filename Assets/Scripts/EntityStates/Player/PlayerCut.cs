@@ -18,6 +18,7 @@ namespace CuttingEdge.EntityStates.Player
             Vector3 endWorldPosition = Plane.enemyPlane.GetPositionFromScreenPosition(endScreenPosition);
             Debug.Log($"PlayerCut {startWorldPosition} -> {endWorldPosition}");
             Debug.DrawRay(startWorldPosition, endWorldPosition - startWorldPosition, Color.red, DURATION);
+            float cutLength = Vector3.Distance(startWorldPosition, endWorldPosition);
             RaycastHit[] hit = Physics.RaycastAll(startWorldPosition, endWorldPosition - startWorldPosition, Vector3.Distance(startWorldPosition, endWorldPosition), LayerCatalog.enemyHurtboxMask);
             bool cutHit = false;
             if (hit.Length > 0)
@@ -33,6 +34,7 @@ namespace CuttingEdge.EntityStates.Player
                     }
                 }
             }
+            EffectManager.SimpleEffect(Resources.Load<GameObject>("CutMissEffect"), (startWorldPosition + endWorldPosition) / 2, Quaternion.LookRotation(endWorldPosition - startWorldPosition)).transform.localScale = new Vector3(1, 1, cutLength);
         }
         public override void FixedUpdate()
         {

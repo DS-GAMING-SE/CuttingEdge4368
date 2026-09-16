@@ -16,6 +16,7 @@ namespace DSGameUtils.Pools
         private void Awake()
         {
             pooledObject = GetComponent<PooledGameObject>();
+            pooledObject.onReturnToPool += ResetTimer;
         }
 
         private void FixedUpdate()
@@ -25,6 +26,10 @@ namespace DSGameUtils.Pools
             {
                 pooledObject.ReturnToPool();
             }
+        }
+        private void ResetTimer()
+        {
+            timer = 0f;
         }
     }
 }
