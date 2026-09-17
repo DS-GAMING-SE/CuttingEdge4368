@@ -18,6 +18,7 @@ namespace CuttingEdge.EntityStates.Player
             base.OnEnter();
             Debug.Log("PlayerMainState Start");
             outer.inputBank.cut.performed += StartCut;
+            outer.inputBank.parry.performed += StartParry;
             if (TryGetComponent<ComponentLocator>(out var component))
             {
                 weaponStateMachine = component.FindComponent<EntityStateMachine>("WeaponStateMachine");
@@ -32,11 +33,16 @@ namespace CuttingEdge.EntityStates.Player
         public override void OnExit()
         {
             outer.inputBank.cut.performed -= StartCut;
+            outer.inputBank.parry.performed -= StartParry;
             base.OnExit();
         }
         private void StartCut(InputAction.CallbackContext context)
         {
             weaponStateMachine.TryInterruptState(new PlayerAimCut(), InterruptPriority.Any);
+        }
+        private void StartParry(InputAction.CallbackContext context)
+        {
+            weaponStateMachine.TryInterruptState(new PlayerParry(), InterruptPriority.Skill);
         }
     }
 }
