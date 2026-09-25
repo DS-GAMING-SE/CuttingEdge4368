@@ -6,6 +6,7 @@ using UnityEngine;
 namespace CuttingEdge
 {
     [ExecuteInEditMode]
+    [DefaultExecutionOrder(-1)]
     public class Plane : MonoBehaviour
     {
         public static Plane enemyPlane;
@@ -78,6 +79,11 @@ namespace CuttingEdge
         public Vector3 ClampPositionToPaddedPlane(Vector3 position)
         {
             return new Vector3(Mathf.Clamp(position.x, widthPadded / -2, widthPadded / 2), Mathf.Clamp(position.y, heightPadded / -2, heightPadded / 2), position.z);
+        }
+        public Vector3 GetRandomWorldPositionOnPlane()
+        {
+            return transform.position + (transform.right * widthPadded * 0.5f * Random.Range(-1f, 1f))
+                + (transform.up * heightPadded * 0.5f * Random.Range(-1f, 1f));
         }
         private void OnDrawGizmosSelected()
         {

@@ -10,5 +10,8 @@ namespace CuttingEdge
     {
         public static int enemyHurtboxLayer = LayerMask.NameToLayer("EnemyHurtbox");
         public static int enemyHurtboxMask = 1 << enemyHurtboxLayer;
+
+        public static int playerHurtboxLayer = LayerMask.NameToLayer("PlayerHurtbox");
+        public static int playerHurtboxMask = 1 << playerHurtboxLayer;
     }
 }

@@ -25,6 +25,10 @@ namespace DSGameUtils.Pools
             pooledObject.SetActive(true);
             return pooledObject;
         }
+        public GameObject GetDeactivated()
+        {
+            return base.Get();
+        }
         protected override GameObject CreateNewPooledObject()
         {
             if (!prefab) { Debug.LogError("GameObjectPool prefab is null"); return null; }

@@ -1,3 +1,4 @@
+using DSGameUtils.Pools;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -130,7 +131,7 @@ namespace EzySlice {
                 return null;
             }
 
-            GameObject newObject = EffectManager.CreateOrGetPooledEffect(Resources.Load<GameObject>("GenericCutHull"));
+            GameObject newObject = DynamicGameObjectPool.CreateOrGetPooledObject(Resources.Load<GameObject>("GenericCutHull"));
             newObject.GetComponent<MeshFilter>().mesh = hull;
 
             return newObject;

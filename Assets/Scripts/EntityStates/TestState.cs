@@ -9,13 +9,15 @@ namespace CuttingEdge.EntityStates
 {
     public class TestState : EntityState
     {
-        public static string testText;
+        [ConfigSerializeField]
+        public string testText{ get { return config.serializedStrings[0]; } }
+        [ConfigSerializeField]
+        public GameObject testGameObject{ get { return (GameObject)config.serializedObjects[0]; } }
+        [ConfigSerializeField]
+        public GameObject testGameObject2{ get { return (GameObject)config.serializedObjects[1]; } }
+        [ConfigSerializeField]
+        public GameObject testGameObject3{ get { return (GameObject)config.serializedObjects[2]; } }
         private bool printed;
-        [MenuItem("Test/TestText")]
-        public static void SetTestText()
-        {
-            typeof(TestState).GetField("testText", BindingFlags.Static | BindingFlags.Public).SetValue(null, "Test Text");
-        }
         public override void FixedUpdate()
         {
             base.FixedUpdate();

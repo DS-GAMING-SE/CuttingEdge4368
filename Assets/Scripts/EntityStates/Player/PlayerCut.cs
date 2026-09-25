@@ -9,12 +9,13 @@ namespace CuttingEdge.EntityStates.Player
     {
         public Vector2 startScreenPosition;
         public Vector2 endScreenPosition;
-        public const float DURATION = 0.8f;
+        public const float DURATION = 1.1f;
         public override void OnEnter()
         {
             base.OnEnter();
             // Rework cutting to not use planes, just boxcast with max distance?
-            Vector3 startWorldPosition = Plane.enemyPlane.GetPositionFromScreenPosition(startScreenPosition);
+            CutManager.Cut(startScreenPosition, endScreenPosition);
+            /*Vector3 startWorldPosition = Plane.enemyPlane.GetPositionFromScreenPosition(startScreenPosition);
             Vector3 endWorldPosition = Plane.enemyPlane.GetPositionFromScreenPosition(endScreenPosition);
             Debug.Log($"PlayerCut {startWorldPosition} -> {endWorldPosition}");
             Debug.DrawRay(startWorldPosition, endWorldPosition - startWorldPosition, Color.red, DURATION);
@@ -34,7 +35,7 @@ namespace CuttingEdge.EntityStates.Player
                     }
                 }
             }
-            EffectManager.SimpleEffect(Resources.Load<GameObject>("CutMissEffect"), (startWorldPosition + endWorldPosition) / 2, Quaternion.LookRotation(endWorldPosition - startWorldPosition)).transform.localScale = new Vector3(1, 1, cutLength);
+            EffectManager.SimpleEffect(Resources.Load<GameObject>("CutMissEffect"), (startWorldPosition + endWorldPosition) / 2, Quaternion.LookRotation(endWorldPosition - startWorldPosition)).transform.localScale = new Vector3(1, 1, cutLength);*/
         }
         public override void FixedUpdate()
         {

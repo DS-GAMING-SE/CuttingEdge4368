@@ -13,7 +13,6 @@ namespace DSGameUtils.Pools
         private Rigidbody rigidBody;
         public Action onReturnToPool;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReturnToPool()
         {
             onReturnToPool?.Invoke();
@@ -21,7 +20,14 @@ namespace DSGameUtils.Pools
             {
                 rigidBody.velocity = Vector3.zero;
             }
-            pool.Return(gameObject);
+            if (pool != null)
+            {
+                pool.Return(gameObject);
+            }
+            else
+            {
+                GameObject.Destroy(gameObject);
+            }
         }
         private void OnDestroy()
         {

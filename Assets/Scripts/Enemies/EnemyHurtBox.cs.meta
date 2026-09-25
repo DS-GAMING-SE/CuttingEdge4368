@@ -3,7 +3,10 @@ guid: 196ee2178bce5a045986eb4e1e1e1490
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - crossSectionMaterial: {fileID: 2100000, guid: 330d0afb5f36db046ae4c5d230e6e591, type: 2}
+  - cutGameObject: {instanceID: 0}
+  - cutEnemyController: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
