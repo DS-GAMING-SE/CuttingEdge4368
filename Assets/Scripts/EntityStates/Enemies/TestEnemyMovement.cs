@@ -13,11 +13,13 @@ namespace CuttingEdge.EntityStates.Enemy
         public float speed = 7f;
         private float endTime;
         private bool endStarted;
+        private float nextProjectileTimer;
 
         public override void OnEnter()
         {
             base.OnEnter();
-            endTime = UnityEngine.Random.Range(1f, 4f);
+            endTime = UnityEngine.Random.Range(1f, 8f);
+            nextProjectileTimer = UnityEngine.Random.Range(0.5f, 1f);
             SetRandomTargetPosition();
         }
         public override void Update()
@@ -29,6 +31,16 @@ namespace CuttingEdge.EntityStates.Enemy
                 if (Vector3.kEpsilonNormalSqrt > (transform.position - targetPosition).sqrMagnitude)
                 {
                     SetRandomTargetPosition();
+                }
+                if (age > nextProjectileTimer)
+                {
+                    nextProjectileTimer += UnityEngine.Random.Range(0.5f, 1.5f);
+                    GameObject player = GameObject.Find("PlayerCharacter");
+                    if (player)
+                    {
+                        ProjectileManager.FireProjectile(Resources.Load<GameObject>("LaserProjectile"), transform.position, gameObject, player.transform); // yuck
+                        SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Enemies/sfxEnemyLaserShoot"));
+                    }
                 }
             }
             else

@@ -31,7 +31,7 @@ namespace DSGameUtils.Pools
         }
         private void OnDestroy()
         {
-            pool.Remove(gameObject);
+            pool?.Remove(gameObject);
         }
     }
 }

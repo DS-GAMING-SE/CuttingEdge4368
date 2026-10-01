@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CuttingEdge.EntityStates.Player
 {
-    public class PlayerCut : EntityState
+    public class PlayerCut : PlayerState
     {
         public Vector2 startScreenPosition;
         public Vector2 endScreenPosition;
@@ -15,6 +15,8 @@ namespace CuttingEdge.EntityStates.Player
             base.OnEnter();
             // Rework cutting to not use planes, just boxcast with max distance?
             CutManager.Cut(startScreenPosition, endScreenPosition);
+            PlayAnimation("Cut");
+            SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Player/sfxCut"));
             /*Vector3 startWorldPosition = Plane.enemyPlane.GetPositionFromScreenPosition(startScreenPosition);
             Vector3 endWorldPosition = Plane.enemyPlane.GetPositionFromScreenPosition(endScreenPosition);
             Debug.Log($"PlayerCut {startWorldPosition} -> {endWorldPosition}");

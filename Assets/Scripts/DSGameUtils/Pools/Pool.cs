@@ -88,5 +88,14 @@ namespace DSGameUtils.Pools
                 DestroyObject(inUseObject);
             }
         }
+
+        public static T GetOrCreatePooledObject(ref Pool<T> pool)
+        {
+            if (pool == null)
+            {
+                pool = new Pool<T>();
+            }
+            return pool.Get();
+        }
     }
 }
