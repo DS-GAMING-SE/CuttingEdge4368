@@ -22,6 +22,7 @@ namespace CuttingEdge.Enemies
         private static void Initialize()
         {
             CuttingEdgeApplication.onFixedUpdate += FixedUpdate;
+            timeUntilEnemySpawn = 5f;
         }
 
         private static float timeUntilEnemySpawn;

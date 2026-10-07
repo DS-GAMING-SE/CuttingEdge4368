@@ -73,7 +73,6 @@ namespace DSGameUtils
 
         public static implicit operator SerializableType(Type x) => new SerializableType(x);
 
-#if UNITY_EDITOR
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
         public class RequiredTypeAttribute : Attribute
         {
@@ -91,7 +90,6 @@ namespace DSGameUtils
                 this.namespaceOverride = namespaceOverride;
             }
         }
-#endif
     }
 #if UNITY_EDITOR
     [CustomPropertyDrawer(typeof(SerializableType), true)]

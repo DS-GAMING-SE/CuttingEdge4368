@@ -18,11 +18,11 @@ public class InputBank : MonoBehaviour
 
     private void Awake()
     {
-        aimCut = inputActions.FindAction("Aim Cut");
-        cut = inputActions.FindAction("Cut");
-        cancelCut = inputActions.FindAction("Cancel Cut");
-        parry = inputActions.FindAction("Parry");
-        move = inputActions.FindAction("Move");
+        aimCut = inputActions.FindAction("Aim Cut", true);
+        cut = inputActions.FindAction("Cut", true);
+        cancelCut = inputActions.FindAction("Cancel Cut", true);
+        parry = inputActions.FindAction("Parry", true);
+        move = inputActions.FindAction("Move", true);
     }
 
     private void OnEnable()
