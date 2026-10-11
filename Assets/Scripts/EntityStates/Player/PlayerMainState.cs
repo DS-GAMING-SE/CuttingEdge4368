@@ -17,8 +17,8 @@ namespace CuttingEdge.EntityStates.Player
         {
             base.OnEnter();
             Debug.Log("PlayerMainState Start");
-            outer.inputBank.cut.performed += StartCut;
-            outer.inputBank.parry.performed += StartParry;
+            //outer.inputBank.cut.performed += StartCut;
+            //outer.inputBank.parry.performed += StartParry;
             if (TryGetComponent<ComponentLocator>(out var component))
             {
                 weaponStateMachine = component.FindComponent<EntityStateMachine>("WeaponStateMachine");
@@ -29,18 +29,27 @@ namespace CuttingEdge.EntityStates.Player
             base.Update();
             Vector3.SmoothDamp(velocity, MOVEMENT_SPEED * outer.inputBank.moveVector2.ToVector3XY(), ref velocity, ACCELERATION_TIME);
             transform.localPosition = Plane.playerPlane.ClampPositionToPaddedPlane(transform.localPosition + (velocity * Time.deltaTime));
+
+            if (UnityEngine.Input.GetMouseButtonDown(0))
+            {
+                StartCut();
+            }
+            else if (UnityEngine.Input.GetMouseButtonDown(1))
+            {
+                StartParry();
+            }
         }
         public override void OnExit()
         {
-            outer.inputBank.cut.performed -= StartCut;
-            outer.inputBank.parry.performed -= StartParry;
+            //outer.inputBank.cut.performed -= StartCut;
+            //outer.inputBank.parry.performed -= StartParry;
             base.OnExit();
         }
-        private void StartCut(InputAction.CallbackContext context)
+        private void StartCut()
         {
             weaponStateMachine.TryInterruptState(new PlayerAimCut(), InterruptPriority.Any);
         }
-        private void StartParry(InputAction.CallbackContext context)
+        private void StartParry()
         {
             weaponStateMachine.TryInterruptState(new PlayerParry(), InterruptPriority.Skill);
         }

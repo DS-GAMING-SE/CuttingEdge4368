@@ -92,16 +92,20 @@ namespace CuttingEdge
             return cutColliderPool.GetDeactivated().GetComponent<CutCollider>();
         }
 
-        private static void PlayCutSound(bool hit)
+        private static void CutHitEffects(bool hit)
         {
-            if (hit) SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Player/sfxCutHit1"), Resources.Load<AudioClip>("Player/sfxCutHit2"), Resources.Load<AudioClip>("Player/sfxCutHit3"));
+            if (hit)
+            {
+                TimeScaleManager.AddTimeScaleOverrideOneShot(0f, 0.7f, 0f, 0.1f, 0f, TimeScaleManager.Priority.High);
+                SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Player/sfxCutHit1"), Resources.Load<AudioClip>("Player/sfxCutHit2"), Resources.Load<AudioClip>("Player/sfxCutHit3"));
+            }
         }
 
         [RuntimeInitializeOnLoadMethod]
         private static void Initialize()
         {
             SceneManager.activeSceneChanged += (scene, scene2) => { cutColliderPool?.Clear(); };
-            CutManager.onCut += PlayCutSound;
+            CutManager.onCut += CutHitEffects;
         }
     }
 }

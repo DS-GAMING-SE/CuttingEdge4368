@@ -27,11 +27,11 @@ public class InputBank : MonoBehaviour
 
     private void OnEnable()
     {
-        inputActions.Enable();
+        //inputActions.Enable();
     }
 
     private void OnDisable()
     {
-        inputActions.Disable();
+        //inputActions.Disable();
     }
 }

@@ -7,17 +7,16 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: matButtonHover
+  m_Name: matButtonHighlightFlashSide
   m_Shader: {fileID: -6465566751694194690, guid: 32af7f4ce4e4a2c40af4323549eee36f, type: 3}
   m_ValidKeywords:
   - _BUILTIN_SURFACE_TYPE_TRANSPARENT
-  - _SCREENSPACECLOUDS
   - _USEREMAP
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: -1
   stringTagMap:
     RenderType: Transparent
   disabledShaderPasses: []
@@ -29,12 +28,12 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Cloud1Tex:
-        m_Texture: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 1, y: 5}
-        m_Offset: {x: 0, y: 0}
+        m_Texture: {fileID: 2800000, guid: 410262707b66eb54f9b6595219b03230, type: 3}
+        m_Scale: {x: -1, y: 1}
+        m_Offset: {x: 1, y: 0}
     - _Cloud2Tex:
-        m_Texture: {fileID: 10305, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 1.3, y: 1.3}
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
         m_Texture: {fileID: 0}
@@ -53,9 +52,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 410262707b66eb54f9b6595219b03230, type: 3}
-        m_Scale: {x: -1, y: 1}
-        m_Offset: {x: 1, y: 0}
+        m_Texture: {fileID: 2800000, guid: 6707d1ec39edad447aa5abc499f7fd05, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -75,7 +74,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaBias: 0
-    - _AlphaBoost: 1
+    - _AlphaBoost: 5
     - _BUILTIN_AlphaClip: 0
     - _BUILTIN_Blend: 0
     - _BUILTIN_CullMode: 2
@@ -101,7 +100,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _SCREENSPACECLOUDS: 1
+    - _SCREENSPACECLOUDS: 0
     - _SmoothnessTextureChannel: 0
     - _SoftFactor: 0
     - _SpecularHighlights: 1
@@ -110,12 +109,12 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Cloud1Scroll: {r: -3, g: 0, b: 0, a: 0}
-    - _Cloud2Scroll: {r: 1, g: 0.5, b: 0, a: 0}
+    - _Cloud1Scroll: {r: 0, g: 0, b: 0, a: 0}
+    - _Cloud2Scroll: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &5641443499714607107
+--- !u!114 &4769054787207139984
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

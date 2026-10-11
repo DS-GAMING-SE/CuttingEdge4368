@@ -12,42 +12,43 @@ namespace CuttingEdge.EntityStates.Player
         private Vector2 startScreenPosition;
         private const float MINIMUM_CUT_LENGTH = 50;
         private AimCutEffectController aimEffect;
-        private float timeScale;
-        private const float TIME_SCALE = 0.4f;
-        private const float TIME_SCALE_LERP_DURATION = 1f;
+        private const float TIME_SCALE = 0.5f;
+        private const float TIME_SCALE_FADE_IN_DURATION = 0.2f;
+        private const float TIME_SCALE_FADE_OUT_DURATION = 0.8f;
         public override void OnEnter()
         {
             base.OnEnter();
-            outer.inputBank.cut.canceled += TryCut;
-            outer.inputBank.cancelCut.performed += CancelState;
+            //outer.inputBank.cut.canceled += TryCut;
+            //outer.inputBank.cancelCut.performed += CancelState;
             startScreenPosition = outer.inputBank.aimCutVector2;
             Vector3 startEffectPosition = Camera.main.ScreenToWorldPoint(new Vector3(startScreenPosition.x, startScreenPosition.y, Plane.enemyPlane.distanceFromCamera / 2));
             aimEffect = EffectManager.SimpleEffect(Resources.Load<GameObject>("AimCutEffect"), startEffectPosition, Quaternion.identity).GetComponent<AimCutEffectController>();
             aimEffect.SetStartPosition(startEffectPosition);
             aimEffect.SetEndPosition(startEffectPosition);
-            timeScale = TIME_SCALE;
-            Time.timeScale = timeScale; // People might aim cut just to make dodging easier. Limit somehow?
+            //TimeScaleManager.AddTimeScaleOverrideOneShot(TIME_SCALE, 1f, TIME_SCALE_FADE_IN_DURATION, TIME_SCALE_FADE_OUT_DURATION, TimeScaleManager.Priority.Low);
             PlayAnimation("AimCut");
         }
         public override void Update()
         {
             base.Update();
             aimEffect.SetEndPosition(Camera.main.ScreenToWorldPoint(new Vector3(outer.inputBank.aimCutVector2.x, outer.inputBank.aimCutVector2.y, Plane.enemyPlane.distanceFromCamera / 2)));
-            timeScale = Mathf.Min(1f, timeScale + (Time.unscaledDeltaTime * ((1 - TIME_SCALE) / TIME_SCALE_LERP_DURATION)));
-            Time.timeScale = timeScale;
+
+            if (!UnityEngine.Input.GetMouseButton(0))
+            {
+                TryCut();
+            }
             //Debug.DrawLine(Plane.enemyPlane.GetPositionFromScreenPosition(startScreenPosition), Plane.enemyPlane.GetPositionFromScreenPosition(outer.inputBank.aimCut.ReadValue<Vector2>()), Color.cyan, 0.1f);
         }
         public override void OnExit()
         {
-            outer.inputBank.cut.canceled -= TryCut;
-            outer.inputBank.cancelCut.performed -= CancelState;
+            //outer.inputBank.cut.canceled -= TryCut;
+            //outer.inputBank.cancelCut.performed -= CancelState;
             aimEffect.pooled.ReturnToPool();
-            Time.timeScale = 1f;
             PlayAnimation("Idle");
             base.OnExit();
         }
 
-        private void TryCut(InputAction.CallbackContext context)
+        private void TryCut()
         {
             if ((startScreenPosition - new Vector2(outer.inputBank.aimCutVector2.x, outer.inputBank.aimCutVector2.y)).magnitude < MINIMUM_CUT_LENGTH)
             {

@@ -20,14 +20,14 @@ namespace CuttingEdge
         }
         void OnEnable()
         {
-            if (instance) Destroy(gameObject);
+            if (instance) { Destroy(gameObject); return; }
 
             instance = this;
         }
 
         private void OnDisable()
         {
-            instance = null;
+            if (instance == this) instance = null;
         }
         void FixedUpdate()
         {

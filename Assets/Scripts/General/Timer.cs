@@ -15,11 +15,19 @@ public class Timer : MonoBehaviour
     private StringBuilder stringBuilder = new StringBuilder();
     private void Awake()
     {
-        HealthComponent.onDeath += () => { enabled = false; };
+        HealthComponent.onDeath += DisableOnGameEnd;
     }
     private void OnEnable()
     {
         timer = 0f;
+    }
+    private void OnDisable()
+    {
+        HealthComponent.onDeath -= DisableOnGameEnd;
+    }
+    private void DisableOnGameEnd()
+    {
+        enabled = false;
     }
 
     private void Update()

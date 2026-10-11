@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CuttingEdge.Enemies
 {
@@ -9,6 +10,7 @@ namespace CuttingEdge.Enemies
     {
         public static Action<EnemyController> onEnemyDefeated; 
         public static List<EnemyController> activeEnemies = new List<EnemyController>();
+        public static bool spawningEnemies = false;
         public static EnemyController SpawnEnemy(GameObject prefab, Vector3 position)
         {
             if (!prefab) return null;
@@ -18,16 +20,22 @@ namespace CuttingEdge.Enemies
 
             return null;
         }
-        [RuntimeInitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         private static void Initialize()
         {
             CuttingEdgeApplication.onFixedUpdate += FixedUpdate;
-            timeUntilEnemySpawn = 5f;
+            SceneManager.activeSceneChanged += (scene, scene2) =>
+            {
+                spawningEnemies = scene2.name == "Gameplay";
+                timeUntilEnemySpawn = 5f;
+            };
         }
 
         private static float timeUntilEnemySpawn;
         private static void FixedUpdate()
         {
+            if (!spawningEnemies) return;
+
             timeUntilEnemySpawn -= Time.fixedDeltaTime;
             if (timeUntilEnemySpawn <= 0)
             {
