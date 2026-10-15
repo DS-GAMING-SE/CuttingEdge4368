@@ -12,6 +12,8 @@ public class AnimateShaderProperty : MonoBehaviour
     private AnimationCurve propertyCurve;
     [SerializeField]
     private float duration;
+    [SerializeField]
+    private bool disableOnEnd;
     private float timer;
     [SerializeField]
     private Renderer targetRenderer;
@@ -23,14 +25,29 @@ public class AnimateShaderProperty : MonoBehaviour
         if (propertyID == -1)
         {
             Debug.LogError("Could not find property id for AnimateShaderProperty with property " + propertyName);
+            enabled = false;
             return;
         }
-
+        if (!targetRenderer)
+        {
+            Debug.LogError("No TargetRenderer is assigned to AnimateShaderProperty");
+            enabled = false;
+            return;
+        }
+        materials = targetRenderer.materials;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        timer += Time.deltaTime;
+        foreach (var material in materials)
+        {
+            material.SetFloat(propertyID, propertyCurve.Evaluate(timer / duration));
+        }
+        if (timer > duration && disableOnEnd)
+        {
+            enabled = false;
+        }
     }
 }

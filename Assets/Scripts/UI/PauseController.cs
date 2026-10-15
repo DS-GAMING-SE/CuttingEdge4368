@@ -66,7 +66,6 @@ namespace CuttingEdge
         {
             SetPaused(false);
             SceneManager.LoadScene(mainMenuSceneName);
-            SceneManager.SetActiveScene(SceneManager.GetSceneByName(mainMenuSceneName));
         }
         private void QuitButtonClicked()
         {

@@ -25,7 +25,6 @@ public class MainMenuController : MonoBehaviour
     private void StartButtonClicked()
     {
         SceneManager.LoadScene(startSceneName);
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName(startSceneName));
     }
     private void SettingsButtonClicked()
     {

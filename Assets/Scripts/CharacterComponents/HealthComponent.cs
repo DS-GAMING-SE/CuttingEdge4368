@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace CuttingEdge
 {
-    public class HealthComponent : MonoBehaviour, IOnHitReceiver
+    public class HealthComponent : MonoBehaviour, IDamageable
     {
         public int maxHealth;
         public int health { get { return _health; } }
         private int _health;
 
         [SerializeField]
-        private float invincibilityDuration;
+        private float onHitInvincibilityDuration;
         private float invincibilityTimer;
 
         public bool invincible { get; private set; }
@@ -27,6 +27,8 @@ namespace CuttingEdge
         private GameObject healthBarPrefab;
         private HealthBar healthBar;
 
+        public delegate void OnHitDelegate(ref int damage, ref bool rejected, GameObject attacker, GameObject inflictor);
+        public event OnHitDelegate onHit;
         // this will have problems if anything other than the player has healthcomponent, but there's no plans of that happening
         public static Action onDeath;
 
@@ -48,11 +50,14 @@ namespace CuttingEdge
             if (healthBar) Destroy(healthBar);
         }
 
-        public void Damage()
+        public void Damage(int amount, GameObject attacker, GameObject inflictor)
         {
-            if (invincible) return;
+            bool damageRejected = invincible;
+            onHit?.Invoke(ref amount, ref damageRejected, attacker, inflictor);
             
-            SetHealth(health - 1);
+            if (damageRejected) return;
+            
+            SetHealth(health - amount);
             if (hitEffectPrefab) EffectManager.SimpleEffect(hitEffectPrefab, transform.position, Quaternion.identity);
             if (health <= 0)
             {
@@ -63,8 +68,7 @@ namespace CuttingEdge
             else
             {
                 if (hitSoundEffect) SoundEffectManager.PlaySound(hitSoundEffect);
-                invincible = true;
-                invincibilityTimer = invincibilityDuration;
+                SetInvincible(onHitInvincibilityDuration);
             }
         }
         public void SetHealth(int newHealth)
@@ -74,6 +78,11 @@ namespace CuttingEdge
             {
                 healthBar.SetFill(((float)health) / maxHealth);
             }
+        }
+        public void SetInvincible(float duration)
+        {
+            invincibilityTimer = Mathf.Max(invincibilityTimer, duration);
+            invincible = true;
         }
 
         private void FixedUpdate()
@@ -88,8 +97,8 @@ namespace CuttingEdge
             }
         }
     }
-    public interface IOnHitReceiver
+    public interface IDamageable
     {
-        public void Damage();
+        public void Damage(int amount, GameObject attacker, GameObject inflictor);
     }
 }

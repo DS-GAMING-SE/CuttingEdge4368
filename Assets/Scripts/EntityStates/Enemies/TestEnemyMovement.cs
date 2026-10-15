@@ -38,7 +38,7 @@ namespace CuttingEdge.EntityStates.Enemy
                     GameObject player = GameObject.Find("PlayerCharacter");
                     if (player)
                     {
-                        ProjectileManager.FireProjectile(Resources.Load<GameObject>("LaserProjectile"), transform.position, gameObject, player.transform); // yuck
+                        ProjectileManager.FireProjectile(Resources.Load<GameObject>("LaserProjectile"), transform.position, gameObject, player.transform);
                         SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Enemies/sfxEnemyLaserShoot"));
                     }
                 }

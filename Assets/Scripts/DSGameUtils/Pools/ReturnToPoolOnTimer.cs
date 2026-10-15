@@ -11,21 +11,31 @@ namespace DSGameUtils.Pools
 
         public float duration = 3f;
 
+        public bool disableOnEnd;
+
         private float timer;
 
         private void Awake()
         {
             pooledObject = GetComponent<PooledGameObject>();
-            pooledObject.onReturnToPool += ResetTimer;
+            //pooledObject.onReturnToPool += ResetTimer;
         }
-
+        private void OnEnable()
+        {
+            ResetTimer();
+        }
         private void FixedUpdate()
         {
             timer += Time.fixedDeltaTime;
             if (timer >= duration)
             {
                 pooledObject.ReturnToPool();
+                if (disableOnEnd) enabled = false;
             }
+        }
+        private void OnDisable()
+        {
+            ResetTimer();
         }
         private void ResetTimer()
         {

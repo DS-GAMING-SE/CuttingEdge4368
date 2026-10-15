@@ -25,7 +25,7 @@ namespace CuttingEdge.EntityStates.Player
             aimEffect = EffectManager.SimpleEffect(Resources.Load<GameObject>("AimCutEffect"), startEffectPosition, Quaternion.identity).GetComponent<AimCutEffectController>();
             aimEffect.SetStartPosition(startEffectPosition);
             aimEffect.SetEndPosition(startEffectPosition);
-            //TimeScaleManager.AddTimeScaleOverrideOneShot(TIME_SCALE, 1f, TIME_SCALE_FADE_IN_DURATION, TIME_SCALE_FADE_OUT_DURATION, TimeScaleManager.Priority.Low);
+            TimeScaleManager.AddTimeScaleOverrideOneShot(TIME_SCALE, 1f, TIME_SCALE_FADE_IN_DURATION, TIME_SCALE_FADE_OUT_DURATION, TimeScaleManager.Priority.Low);
             PlayAnimation("AimCut");
         }
         public override void Update()

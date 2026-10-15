@@ -1,7 +1,9 @@
 using DSGameUtils.Pools;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace CuttingEdge
 {
@@ -9,10 +11,16 @@ namespace CuttingEdge
     {
         [HideInInspector]
         public GameObject owner;
+        public float speed { get { return overrideSpeed > 0 ? overrideSpeed : defaultSpeed; } set { overrideSpeed = value; } }
         [Header("Generic")]
-        public float speed = 30;
+        [SerializeField]
+        private float defaultSpeed = 50f;
+        private float overrideSpeed = -1f;
         [SerializeField]
         private GameObject hitEffectPrefab;
+        [SerializeField]
+        private int damage = 1;
+        public bool parryable = true;
 
         [Header("Indicator")]
         [SerializeField]
@@ -33,17 +41,23 @@ namespace CuttingEdge
         private Collider projectileCollider;
         [SerializeField]
         private PooledGameObject pooledGameObject;
+        public UnityEvent OnLeftTargetPlane;
+        public UnityEvent OnReset;
 
-        private bool targetingPlayer;
         private Plane targetPlane;
         private Vector3 targetPointOnPlane;
+        [NonSerialized]
         public bool onPlane;
+        [NonSerialized]
+        public bool destroyOnEndOfFrame; 
 
         public const float DEGREES_TO_RADIANS = 0.0174533f;
 
         private void OnEnable()
         {
             if (indicatorPrefab) indicator = DynamicGameObjectPool.CreateOrGetPooledObject(indicatorPrefab);
+            overrideSpeed = -1f;
+            destroyOnEndOfFrame = false;
             UpdateIndicatorPosition();
         }
         private void OnDisable()
@@ -71,20 +85,34 @@ namespace CuttingEdge
         {
             projectileCollider.gameObject.layer = LayerCatalog.playerHurtboxLayer;
             targetPlane = Plane.playerPlane;
-            targetingPlayer = true;
         }
         [ContextMenu("Set Target To Enemy")]
         public void SetTargetToEnemy()
         {
             projectileCollider.gameObject.layer = LayerCatalog.enemyHurtboxLayer;
             targetPlane = Plane.enemyPlane;
-            targetingPlayer = false;
+        }
+        public void ResetProjectile()
+        {
+            overrideSpeed = -1f;
+            destroyOnEndOfFrame = false;
+            OnReset?.Invoke();
+            Debug.Log("Reset");
         }
 
         private void UpdateIndicatorPosition()
         {
             if (!targetPlane) return;
-            onPlane = targetPlane.TryRaycastOntoPlane(transform.position, transform.forward, out targetPointOnPlane);
+            if (targetPlane.TryRaycastOntoPlane(transform.position, transform.forward, out targetPointOnPlane))
+            {
+                onPlane = true;
+            }
+            else if (onPlane)
+            {
+                onPlane = false;
+                OnLeftTargetPlane?.Invoke();
+                Debug.Log("Left Plane");
+            }
 
             if (!indicator) return;
             if (onPlane)
@@ -101,12 +129,20 @@ namespace CuttingEdge
         private void OnTriggerEnter(Collider other)
         {
             if (!isActiveAndEnabled) return;
+
             if (other.TryGetComponent<IHurtBox>(out var hurtBox))
             {
-                hurtBox.GetParent().Damage();
+                destroyOnEndOfFrame = true;
+                hurtBox.GetParent().Damage(damage, owner, gameObject);
             }
-            EffectManager.SimpleEffect(hitEffectPrefab, transform.position, transform.rotation);
-            pooledGameObject.ReturnToPool();
+        }
+        private void LateUpdate()
+        {
+            if (destroyOnEndOfFrame)
+            {
+                EffectManager.SimpleEffect(hitEffectPrefab, transform.position, transform.rotation);
+                pooledGameObject.ReturnToPool();
+            }
         }
     }
 }

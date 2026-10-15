@@ -65,7 +65,6 @@ namespace CuttingEdge
                 {
                     timeScale *= Mathf.Lerp(timeScale, timeScaleInstances[i].timeScale * (1 - lastWeight), timeScaleInstances[i].weightWithFade);
                     lastWeight = timeScaleInstances[i].weightWithFade;
-                    Debug.Log(timeScaleInstances[i].weightWithFade);
                 }
 
                 if (timeScaleInstances[i].weightWithFade == 1f)
@@ -79,7 +78,6 @@ namespace CuttingEdge
                     i--;
                 }
             }
-            Debug.Log(timeScale);
             Time.timeScale = timeScale;
         }
 

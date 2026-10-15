@@ -168,6 +168,7 @@ GameObject:
   - component: {fileID: 5585248234355184754}
   - component: {fileID: 5102278008061282931}
   - component: {fileID: 7214224359162770250}
+  - component: {fileID: 3913239158197852647}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -207,9 +208,11 @@ MonoBehaviour:
   initialState:
     _typeName: CuttingEdge.EntityStates.Player.PlayerMainState, Assembly-CSharp,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  initialStateConfiguration: {fileID: 0}
   mainState:
     _typeName: CuttingEdge.EntityStates.Player.PlayerMainState, Assembly-CSharp,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  mainStateConfiguration: {fileID: 0}
 --- !u!114 &6523161222495834183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,9 +228,11 @@ MonoBehaviour:
   initialState:
     _typeName: CuttingEdge.EntityStates.EntityState, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  initialStateConfiguration: {fileID: 0}
   mainState:
     _typeName: CuttingEdge.EntityStates.EntityState, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  mainStateConfiguration: {fileID: 0}
 --- !u!114 &851048695787257660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,11 +338,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 3
-  invincibilityDuration: 1.5
+  onHitInvincibilityDuration: 1.5
   hitEffectPrefab: {fileID: 175384490116263839, guid: 1aa06cc6d4985904ebd15864b607cbe1, type: 3}
   hitSoundEffect: {fileID: 8300000, guid: 06e68b50b620b1e4eb4f8685fc0471aa, type: 3}
   deathSoundEffect: {fileID: 8300000, guid: ec7d7f9716c8bee41bb875b5e132b3d0, type: 3}
   healthBarPrefab: {fileID: 6827702632974009203, guid: b3c9252c71e3b1e4c820d32f65701db1, type: 3}
+--- !u!114 &3913239158197852647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791937708645514675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d13c44657f7b6f14fbd61d29a39a3e03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &995239421446806806
 GameObject:
   m_ObjectHideFlags: 0

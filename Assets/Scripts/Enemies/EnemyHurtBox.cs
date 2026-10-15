@@ -21,14 +21,22 @@ namespace CuttingEdge.Enemies
             if (slice != null)
             {
                 GameObject lowerHull = slice.CreateLowerHull(cutGameObject, crossSectionMaterial);
-                if (lowerHull && lowerHull.TryGetComponent<Rigidbody>(out var lowerRigidBody))
+                if (lowerHull)
                 {
-                    lowerRigidBody.AddForce(normal * -10, ForceMode.Impulse);
+                    lowerHull.transform.SetParent(null);
+                    if (lowerHull.TryGetComponent<Rigidbody>(out var lowerRigidBody))
+                    {
+                        lowerRigidBody.AddForce(normal * -10, ForceMode.Impulse);
+                    }
                 }
                 GameObject upperHull = slice.CreateUpperHull(cutGameObject, crossSectionMaterial);
-                if (upperHull && upperHull.TryGetComponent<Rigidbody>(out var upperRigidBody))
+                if (upperHull)
                 {
-                    upperRigidBody.AddForce(normal * 10, ForceMode.Impulse);
+                    upperHull.transform.SetParent(null);
+                    if (upperHull.TryGetComponent<Rigidbody>(out var upperRigidBody))
+                    {
+                        upperRigidBody.AddForce(normal * 10, ForceMode.Impulse);
+                    }
                 }
                 if (enemyController)
                 {
@@ -42,7 +50,7 @@ namespace CuttingEdge.Enemies
             }
             return false;
         }
-        public IOnHitReceiver GetParent()
+        public IDamageable GetParent()
         {
             return enemyController;
         }

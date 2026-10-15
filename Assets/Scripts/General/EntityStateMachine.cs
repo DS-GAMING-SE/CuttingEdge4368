@@ -14,8 +14,10 @@ namespace CuttingEdge
     {
         [SerializableType.RequiredType(typeof(EntityState), "CuttingEdge.EntityStates")]
         public SerializableType initialState = typeof(EntityState);
+        public EntityStateConfiguration initialStateConfiguration;
         [SerializableType.RequiredType(typeof(EntityState), "CuttingEdge.EntityStates")]
         public SerializableType mainState = typeof(EntityState);
+        public EntityStateConfiguration mainStateConfiguration;
         public EntityState state { get; private set; }
         private EntityState nextState;
         private EntityStateConfiguration nextStateConfig;
@@ -27,7 +29,7 @@ namespace CuttingEdge
         }
         private void OnEnable()
         {
-            SetState(initialState.CreateInstanceOfType<EntityState>());
+            SetState(initialState.CreateInstanceOfType<EntityState>(), initialStateConfiguration);
         }
         private void FixedUpdate()
         {
@@ -65,7 +67,7 @@ namespace CuttingEdge
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetNextStateToMain()
         {
-            SetNextState(mainState);
+            SetNextState(mainState.CreateInstanceOfType<EntityState>(), mainStateConfiguration);
         }
         public bool TryInterruptState(EntityState newState, EntityStateConfiguration config, InterruptPriority interruptPriority)
         {

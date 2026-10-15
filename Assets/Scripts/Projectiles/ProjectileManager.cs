@@ -27,6 +27,7 @@ namespace CuttingEdge
                 projectile.SetActive(true);
                 return projectileController;
             }
+            DynamicGameObjectPool.ReturnToPool(projectile);
             return null;
         }
     }
