@@ -30,7 +30,7 @@ namespace CuttingEdge
         public delegate void OnHitDelegate(ref int damage, ref bool rejected, GameObject attacker, GameObject inflictor);
         public event OnHitDelegate onHit;
         // this will have problems if anything other than the player has healthcomponent, but there's no plans of that happening
-        public static Action onDeath;
+        public Action onDeath;
 
         private void Start()
         {

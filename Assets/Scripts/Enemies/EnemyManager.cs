@@ -9,7 +9,7 @@ namespace CuttingEdge.Enemies
 {
     public class EnemyManager : MonoBehaviour
     {
-        public static EnemyManager enemyManager;
+        public static EnemyManager instance;
         public static Action<EnemyController> onEnemyDefeated; 
         public bool spawningEnemies = false;
         [NonSerialized]
@@ -17,6 +17,10 @@ namespace CuttingEdge.Enemies
         private int wave;
         [SerializeField]
         private float timeUntilEnemySpawn = 3f;
+        [SerializeField]
+        private float timeBetweenWaves = 2f;
+        [SerializeField]
+        private float timeBetweenEnemySpawns = 0.3f;
         [SerializeField]
         private EnemySpawnInfo[] enemySpawns;
         private float totalWeight = -1f;
@@ -27,22 +31,23 @@ namespace CuttingEdge.Enemies
         [SerializeField]
         private int maxEnemiesPerWave = 5;
         private int spawnCredits;
+        private Stack<EnemySpawnInfo> queuedEnemySpawns = new Stack<EnemySpawnInfo>();
         private void OnEnable()
         {
-            if (enemyManager)
+            if (instance)
             {
                 Destroy(gameObject);
                 return;
             }
-            enemyManager = this;
+            instance = this;
             onEnemyDefeated += EnemyDefeated;
         }
         private void OnDisable()
         {
             onEnemyDefeated -= EnemyDefeated;
-            if (enemyManager == this)
+            if (instance == this)
             {
-                enemyManager = null;
+                instance = null;
             }
         }
         public static EnemyController SpawnEnemy(GameObject prefab, Vector3 position)
@@ -56,25 +61,32 @@ namespace CuttingEdge.Enemies
         }
         private void FixedUpdate()
         {
-            if (!spawningEnemies || enemiesActive) return;
+            if (!spawningEnemies || (enemiesActive && queuedEnemySpawns.Count == 0)) return;
 
             timeUntilEnemySpawn -= Time.fixedDeltaTime;
             if (timeUntilEnemySpawn <= 0)
             {
-                wave++;
-                spawnCredits += baseSpawnCredits + (spawnCreditIncreasePerWave * (wave - 1));
-                if (TrySpawnEnemyWave())
+                if (queuedEnemySpawns.Count == 0)
                 {
-                    enemiesActive = true;
+                    wave++;
+                    spawnCredits += baseSpawnCredits + (spawnCreditIncreasePerWave * (wave - 1));
+                    if (QueueEnemyWave())
+                    {
+                        enemiesActive = true;
+                    }
                 }
-                timeUntilEnemySpawn += 0.5f;
+                if (queuedEnemySpawns.Count > 0)
+                {
+                    SpawnEnemy(queuedEnemySpawns.Pop().spawnCard.prefab, Plane.enemyPlane.GetRandomWorldPositionOnPlane());
+                }
+                timeUntilEnemySpawn += timeBetweenEnemySpawns;
             }
         }
         private void EnemyDefeated(EnemyController enemy)
         {
             if (!InstanceTracker.Any<EnemyController>())
             {
-                timeUntilEnemySpawn = 3f;
+                timeUntilEnemySpawn = timeBetweenWaves;
                 enemiesActive = false;
             }
         }
@@ -102,7 +114,7 @@ namespace CuttingEdge.Enemies
             }
             return enemySpawns[0];
         }
-        private bool TrySpawnEnemyWave()
+        private bool QueueEnemyWave()
         {
             bool spawned = false;
             for (int i = 0; i < maxEnemiesPerWave; i ++)
@@ -110,7 +122,7 @@ namespace CuttingEdge.Enemies
                 EnemySpawnInfo enemySpawnInfo = GetWeightedSelection();
                 if (spawnCredits >= enemySpawnInfo.spawnCard.spawnCost)
                 {
-                    SpawnEnemy(enemySpawnInfo.spawnCard.prefab, Plane.enemyPlane.GetRandomWorldPositionOnPlane());
+                    queuedEnemySpawns.Push(enemySpawnInfo);
                     spawnCredits -= enemySpawnInfo.spawnCard.spawnCost;
                     spawned = true;
                 }

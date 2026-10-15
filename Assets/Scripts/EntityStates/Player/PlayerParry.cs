@@ -48,10 +48,22 @@ namespace CuttingEdge.EntityStates.Player
                 rejected = true;
                 healthComponent.SetInvincible(PARRY_INVINCIBILITY_DURATION);
 
-                projectile.SetTargetToEnemy();
-                projectile.target = null;
-                projectile.transform.rotation = Quaternion.LookRotation(Plane.enemyPlane.GetPositionFromScreenPosition(outer.inputBank.aimCutVector2) - transform.position);
                 projectile.ResetProjectile();
+                projectile.SetTargetToEnemy();
+                Vector3 positionOnEnemyPlane = Plane.enemyPlane.GetPositionFromScreenPosition(outer.inputBank.aimCutVector2);
+                /*if (Physics.Linecast(Camera.main.ScreenToWorldPoint(outer.inputBank.aimCutVector2), positionOnEnemyPlane, out var targetInfo, LayerCatalog.enemyHurtboxMask))
+                {
+                    if (targetInfo.colliderInstanceID != 0)
+                    {
+                        projectile.target = targetInfo.collider.transform;
+                    }
+                }
+                else
+                {
+                    projectile.target = null;
+                }*/
+                projectile.target = null;
+                projectile.transform.rotation = Quaternion.LookRotation(positionOnEnemyPlane - transform.position);
                 projectile.speed *= 2f;
 
                 parrying = false;

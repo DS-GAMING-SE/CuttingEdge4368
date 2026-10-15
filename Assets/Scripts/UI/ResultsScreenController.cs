@@ -26,15 +26,15 @@ public class ResultsScreenController : MonoBehaviour
         if (restartButton) restartButton.onClick.AddListener(RestartButtonClicked);
         if (mainMenuButton) mainMenuButton.onClick.AddListener(MainMenuButtonClicked);
         if (quitButton) quitButton.onClick.AddListener(QuitButtonClicked);
-        HealthComponent.onDeath += ShowResultsScreen;
+        GameStateManager.onGameStateChanged += ShowResultsScreen;
     }
     private void OnDisable()
     {
-        HealthComponent.onDeath -= ShowResultsScreen;
+        GameStateManager.onGameStateChanged -= ShowResultsScreen;
     }
-    private void ShowResultsScreen()
+    private void ShowResultsScreen(GameStateManager.GameState state)
     {
-        resultsScreen.SetActive(true);
+        resultsScreen.SetActive(state == GameStateManager.GameState.Results);
     }
     private void RestartButtonClicked()
     {

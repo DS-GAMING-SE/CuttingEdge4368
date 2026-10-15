@@ -43,6 +43,7 @@ namespace CuttingEdge
         private PooledGameObject pooledGameObject;
         public UnityEvent OnLeftTargetPlane;
         public UnityEvent OnReset;
+        private float suppressPlaneCheckTimer = 0f;
 
         private Plane targetPlane;
         private Vector3 targetPointOnPlane;
@@ -51,13 +52,10 @@ namespace CuttingEdge
         [NonSerialized]
         public bool destroyOnEndOfFrame; 
 
-        public const float DEGREES_TO_RADIANS = 0.0174533f;
-
         private void OnEnable()
         {
             if (indicatorPrefab) indicator = DynamicGameObjectPool.CreateOrGetPooledObject(indicatorPrefab);
-            overrideSpeed = -1f;
-            destroyOnEndOfFrame = false;
+            ResetProjectile();
             UpdateIndicatorPosition();
         }
         private void OnDisable()
@@ -69,15 +67,20 @@ namespace CuttingEdge
         }
         void Update()
         {
-            transform.position += transform.forward * speed * Time.deltaTime;
+            transform.position += transform.forward * (speed * Time.deltaTime);
+            if (suppressPlaneCheckTimer > 0)
+            {
+                suppressPlaneCheckTimer -= Time.deltaTime;
+            }
 
             if (target)
             {
                 if (homingStrength > 0 && onPlane)
                 {
-                    transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, target.position - transform.position, homingStrength * DEGREES_TO_RADIANS, Mathf.Infinity));
+                    transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, target.position - transform.position, homingStrength * Mathf.Deg2Rad * Time.deltaTime, Mathf.Infinity));
                 }
             }
+            UpdateOnPlane();
             UpdateIndicatorPosition();
         }
         [ContextMenu("Set Target To Player")]
@@ -85,24 +88,25 @@ namespace CuttingEdge
         {
             projectileCollider.gameObject.layer = LayerCatalog.playerHurtboxLayer;
             targetPlane = Plane.playerPlane;
+            suppressPlaneCheckTimer = 0.1f;
         }
         [ContextMenu("Set Target To Enemy")]
         public void SetTargetToEnemy()
         {
             projectileCollider.gameObject.layer = LayerCatalog.enemyHurtboxLayer;
             targetPlane = Plane.enemyPlane;
+            suppressPlaneCheckTimer = 0.1f;
         }
         public void ResetProjectile()
         {
             overrideSpeed = -1f;
             destroyOnEndOfFrame = false;
+            suppressPlaneCheckTimer = 0f;
             OnReset?.Invoke();
-            Debug.Log("Reset");
         }
-
-        private void UpdateIndicatorPosition()
+        private void UpdateOnPlane()
         {
-            if (!targetPlane) return;
+            if (!targetPlane || suppressPlaneCheckTimer > 0) return;
             if (targetPlane.TryRaycastOntoPlane(transform.position, transform.forward, out targetPointOnPlane))
             {
                 onPlane = true;
@@ -111,9 +115,11 @@ namespace CuttingEdge
             {
                 onPlane = false;
                 OnLeftTargetPlane?.Invoke();
-                Debug.Log("Left Plane");
             }
+        }
 
+        private void UpdateIndicatorPosition()
+        {
             if (!indicator) return;
             if (onPlane)
             {

@@ -15,7 +15,7 @@ public class Timer : MonoBehaviour
     private StringBuilder stringBuilder = new StringBuilder();
     private void Awake()
     {
-        HealthComponent.onDeath += DisableOnGameEnd;
+        GameStateManager.onGameStateChanged += DisableOnGameEnd;
     }
     private void OnEnable()
     {
@@ -23,11 +23,11 @@ public class Timer : MonoBehaviour
     }
     private void OnDisable()
     {
-        HealthComponent.onDeath -= DisableOnGameEnd;
+        GameStateManager.onGameStateChanged -= DisableOnGameEnd;
     }
-    private void DisableOnGameEnd()
+    private void DisableOnGameEnd(GameStateManager.GameState state)
     {
-        enabled = false;
+        enabled = state == GameStateManager.GameState.Gameplay;
     }
 
     private void Update()

@@ -34,6 +34,7 @@ namespace CuttingEdge.EntityStates.Enemy
             {
                 muzzleTransform = transform;
             }
+            shootTimer = timeBetweenShots / 2f;
             targetMovePosition = Plane.enemyPlane.GetRandomWorldPositionOnPlane();
         }
         public override void FixedUpdate()
@@ -43,8 +44,11 @@ namespace CuttingEdge.EntityStates.Enemy
             if (shootTimer >= timeBetweenShots)
             {
                 shootTimer -= timeBetweenShots;
-                ProjectileManager.FireProjectile(projectilePrefab, muzzleTransform.position, gameObject, PlayerController.player.transform);
-                SoundEffectManager.PlaySound(projectileFireAudioClip);
+                if (PlayerController.player)
+                {
+                    ProjectileManager.FireProjectile(projectilePrefab, muzzleTransform.position, gameObject, PlayerController.player.transform);
+                    SoundEffectManager.PlaySound(projectileFireAudioClip);
+                }
             }
         }
         public override void Update()

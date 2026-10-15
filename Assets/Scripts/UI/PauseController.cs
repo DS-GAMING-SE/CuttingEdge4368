@@ -40,6 +40,7 @@ namespace CuttingEdge
         }
         private void TogglePause(InputAction.CallbackContext context)
         {
+            if (GameStateManager.instance.state != GameStateManager.GameState.Gameplay) return;
             SetPaused(!paused);
         }
         public void SetPaused(bool paused)
