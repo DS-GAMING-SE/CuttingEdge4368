@@ -137,10 +137,10 @@ MonoBehaviour:
   hitEffectPrefab: {fileID: 0}
   damage: 1
   parryable: 1
+  homingRadius: 2.5
   indicatorPrefab: {fileID: 2310521722173086737, guid: da560753364647243a23e9236736f89b, type: 3}
-  _indicatorScale: 1
-  target: {fileID: 0}
-  homingStrength: 10
+  _indicatorScale: 0.55
+  homingIndicatorPrefab: {fileID: 2310521722173086737, guid: c3db746c59a1afb49afbb0f9b6cc7826, type: 3}
   projectileCollider: {fileID: 4827923816983938683}
   pooledGameObject: {fileID: 1144584821682784286}
   OnLeftTargetPlane:

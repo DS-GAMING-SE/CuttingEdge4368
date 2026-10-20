@@ -3,7 +3,13 @@ guid: 0cdb394553dee6d41a5077d377bc6abc
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - owner: {instanceID: 0}
+  - hitEffectPrefab: {instanceID: 0}
+  - indicatorPrefab: {fileID: 2310521722173086737, guid: da560753364647243a23e9236736f89b, type: 3}
+  - homingIndicatorPrefab: {fileID: 2310521722173086737, guid: c3db746c59a1afb49afbb0f9b6cc7826, type: 3}
+  - projectileCollider: {instanceID: 0}
+  - pooledGameObject: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

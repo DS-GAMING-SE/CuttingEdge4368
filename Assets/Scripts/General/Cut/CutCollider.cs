@@ -43,7 +43,6 @@ namespace CuttingEdge
             if (other.TryGetComponent<ICuttable>(out var cuttable) && cuttable.TryCut(position, normal))
             {
                 cut = true;
-                Debug.Log("Cut");
             }
         }
     }

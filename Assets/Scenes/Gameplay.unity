@@ -486,8 +486,8 @@ MonoBehaviour:
   - spawnCard: {fileID: 11400000, guid: 6cf11b4799720b149a241626b9b5cc57, type: 2}
     weight: 5
     minimumWave: 4
-  baseSpawnCredits: 110
-  spawnCreditIncreasePerWave: 10
+  baseSpawnCredits: 100
+  spawnCreditIncreasePerWave: 20
   maxEnemiesPerWave: 5
 --- !u!4 &297293899
 Transform:

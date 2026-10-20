@@ -9,17 +9,34 @@ public class AnimateShaderProperty : MonoBehaviour
     private int propertyID = -1;
 
     [SerializeField]
-    private AnimationCurve propertyCurve;
+    protected AnimationCurve propertyCurve;
     [SerializeField]
-    private float duration;
+    protected bool disableOnEnd;
+    public float alpha 
+    {
+        get { return _alpha; }
+        set 
+        { 
+            _alpha = value; 
+            if (materials != null)
+            {
+                foreach (var material in materials)
+                {
+                    targetRenderer.GetPropertyBlock(propertyBlock);
+                    propertyBlock.SetFloat(propertyID, propertyCurve.Evaluate(value));
+                    Debug.Log(value);
+                    targetRenderer.SetPropertyBlock(propertyBlock);
+                }
+            }
+        }
+    }
+    private float _alpha;
     [SerializeField]
-    private bool disableOnEnd;
-    private float timer;
-    [SerializeField]
-    private Renderer targetRenderer;
-    private Material[] materials;
-    
-    void OnEnable()
+    protected Renderer targetRenderer;
+    protected Material[] materials;
+    private MaterialPropertyBlock propertyBlock;
+
+    private void Start()
     {
         if (propertyID == -1) propertyID = Shader.PropertyToID(propertyName);
         if (propertyID == -1)
@@ -35,19 +52,6 @@ public class AnimateShaderProperty : MonoBehaviour
             return;
         }
         materials = targetRenderer.materials;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        timer += Time.deltaTime;
-        foreach (var material in materials)
-        {
-            material.SetFloat(propertyID, propertyCurve.Evaluate(timer / duration));
-        }
-        if (timer > duration && disableOnEnd)
-        {
-            enabled = false;
-        }
+        propertyBlock = new MaterialPropertyBlock();
     }
 }

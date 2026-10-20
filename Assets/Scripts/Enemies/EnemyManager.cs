@@ -24,6 +24,8 @@ namespace CuttingEdge.Enemies
         [SerializeField]
         private EnemySpawnInfo[] enemySpawns;
         private float totalWeight = -1f;
+        private bool enemySelectionDirty;
+        private int nextWaveWithNewEnemy = 1;
         [SerializeField]
         private int baseSpawnCredits = 100;
         [SerializeField]
@@ -31,6 +33,7 @@ namespace CuttingEdge.Enemies
         [SerializeField]
         private int maxEnemiesPerWave = 5;
         private int spawnCredits;
+        private List<EnemySpawnInfo> possibleSpawns = new List<EnemySpawnInfo>();
         private Stack<EnemySpawnInfo> queuedEnemySpawns = new Stack<EnemySpawnInfo>();
         private void OnEnable()
         {
@@ -93,29 +96,43 @@ namespace CuttingEdge.Enemies
         // I don't know if this works
         private EnemySpawnInfo GetWeightedSelection()
         {
-            if (totalWeight < 0)
+            if (enemySelectionDirty)
             {
+                nextWaveWithNewEnemy = int.MaxValue;
+                totalWeight = 0f;
+                possibleSpawns.Clear();
                 foreach (var enemySpawnInfo in enemySpawns)
                 {
-                    totalWeight += enemySpawnInfo.weight;
+                    if (wave >= enemySpawnInfo.minimumWave)
+                    {
+                        possibleSpawns.Add(enemySpawnInfo);
+                        totalWeight += enemySpawnInfo.weight;
+                    }
+                    else
+                    {
+                        nextWaveWithNewEnemy = Math.Min(nextWaveWithNewEnemy, enemySpawnInfo.minimumWave);
+                    }
                 }
+                enemySelectionDirty = false;
             }
 
             float index = UnityEngine.Random.value * totalWeight;
 
             float combinedWeight = 0f;
-            for (int i = 0; i < enemySpawns.Length; i++)
+            for (int i = 0; i < possibleSpawns.Count; i++)
             {
-                combinedWeight += enemySpawns[i].weight;
+                combinedWeight += possibleSpawns[i].weight;
                 if (index < combinedWeight)
                 {
-                    return enemySpawns[i];
+                    return possibleSpawns[i];
                 }
             }
             return enemySpawns[0];
         }
         private bool QueueEnemyWave()
         {
+            if (wave == nextWaveWithNewEnemy) enemySelectionDirty = true;
+
             bool spawned = false;
             for (int i = 0; i < maxEnemiesPerWave; i ++)
             {

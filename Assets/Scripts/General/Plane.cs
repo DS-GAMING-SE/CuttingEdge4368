@@ -85,9 +85,10 @@ namespace CuttingEdge
             return transform.position + (transform.right * widthPadded * 0.5f * Random.Range(-1f, 1f))
                 + (transform.up * heightPadded * 0.5f * Random.Range(-1f, 1f));
         }
-        public bool TryRaycastOntoPlane(Vector3 position, Vector3 direction, out Vector3 hitPoint)
+        public bool TryRaycastOntoPlane(Vector3 position, Vector3 direction, out Vector3 hitPoint, out float distance)
         {
             hitPoint = position;
+            distance = 0f;
             float vdot = Vector3.Dot(direction, transform.forward);
             float ndot = -Vector3.Dot(position, transform.forward) - (0 - Vector3.Dot(transform.position, transform.forward));
             if (Mathf.Approximately(vdot, 0.0f))
@@ -95,7 +96,7 @@ namespace CuttingEdge
                 return false;
             }
 
-            float distance = ndot / vdot;
+            distance = ndot / vdot;
             if (distance > 0)
             {
                 hitPoint = position + (direction * distance);
