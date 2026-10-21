@@ -8,6 +8,10 @@ namespace CuttingEdge.EntityStates.GameStates
 {
     public class GameResults : EntityState
     {
-
+        public override void OnExit()
+        {
+            base.OnExit();
+            ScoreManager.Reset();
+        }
     }
 }

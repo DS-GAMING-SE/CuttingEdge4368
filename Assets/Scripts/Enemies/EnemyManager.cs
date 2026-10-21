@@ -10,7 +10,9 @@ namespace CuttingEdge.Enemies
     public class EnemyManager : MonoBehaviour
     {
         public static EnemyManager instance;
-        public static Action<EnemyController> onEnemyDefeated; 
+        public static Action<EnemyController> onEnemyDefeated;
+        public static Action<int> onEnemiesDefeated;
+        private int numQueuedEnemiesDefeated;
         public bool spawningEnemies = false;
         [NonSerialized]
         public bool enemiesActive = false;
@@ -43,11 +45,9 @@ namespace CuttingEdge.Enemies
                 return;
             }
             instance = this;
-            onEnemyDefeated += EnemyDefeated;
         }
         private void OnDisable()
         {
-            onEnemyDefeated -= EnemyDefeated;
             if (instance == this)
             {
                 instance = null;
@@ -85,8 +85,24 @@ namespace CuttingEdge.Enemies
                 timeUntilEnemySpawn += timeBetweenEnemySpawns;
             }
         }
-        private void EnemyDefeated(EnemyController enemy)
+        private void LateUpdate()
         {
+            if (numQueuedEnemiesDefeated > 0)
+            {
+                SendEnemiesDefeatedEvent();
+            }
+        }
+        public static void EnemyDefeated(EnemyController enemy)
+        {
+            if (!instance) return;
+
+            instance.numQueuedEnemiesDefeated++;
+            onEnemyDefeated?.Invoke(enemy);
+        }
+        private void SendEnemiesDefeatedEvent()
+        {
+            onEnemiesDefeated?.Invoke(numQueuedEnemiesDefeated);
+            numQueuedEnemiesDefeated = 0;
             if (!InstanceTracker.Any<EnemyController>())
             {
                 timeUntilEnemySpawn = timeBetweenWaves;

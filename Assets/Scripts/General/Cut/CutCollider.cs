@@ -18,13 +18,14 @@ namespace CuttingEdge
         public Vector3 position;
         [HideInInspector]
         public Vector3 direction;
-        private bool cut;
+        private List<ICuttable> collectedCuts = new List<ICuttable>();
+        private Coroutine coroutine;
 
         private const float DURATION = 0.1f;
         private void OnEnable()
         {
-            cut = false;
-            StartCoroutine(DisableCollider());
+            collectedCuts.Clear();
+            coroutine = StartCoroutine(DisableCollider());
         }
 
         private IEnumerator DisableCollider()
@@ -32,17 +33,34 @@ namespace CuttingEdge
             EffectManager.SimpleEffect(Resources.Load<GameObject>("CutMissEffect"), position, Quaternion.LookRotation(direction)).transform.localScale = new Vector3(1, 1, direction.magnitude);
             yield return new WaitForSeconds(DURATION);
             Destroy(meshCollider.sharedMesh);
+            bool cut = false;
+            for (int i = 0; i < collectedCuts.Count; i++)
+            {
+                if (collectedCuts[i].TryCut(position, normal))
+                {
+                    cut = true;
+                }
+            }
             CutManager.onCut?.Invoke(cut);
-            cut = false;
+            collectedCuts.Clear();
             pooledGameObject.ReturnToPool();
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (!this.isActiveAndEnabled) return;
-            if (other.TryGetComponent<ICuttable>(out var cuttable) && cuttable.TryCut(position, normal))
+            if (other.TryGetComponent<ICuttable>(out var cuttable))
             {
-                cut = true;
+                if (cuttable.CanBeCut())
+                {
+                    collectedCuts.Add(cuttable);
+                }
+                else
+                {
+                    StopCoroutine(coroutine);
+                    collectedCuts.Clear();
+                    pooledGameObject.ReturnToPool();
+                }
             }
         }
     }

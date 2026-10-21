@@ -13,6 +13,7 @@ namespace CuttingEdge.EntityStates.GameStates
         {
             base.OnEnter();
             if (EnemyManager.instance) EnemyManager.instance.spawningEnemies = true;
+            ScoreManager.Reset();
         }
         public override void OnExit()
         {

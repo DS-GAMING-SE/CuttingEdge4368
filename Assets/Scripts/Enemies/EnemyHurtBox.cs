@@ -15,7 +15,7 @@ namespace CuttingEdge.Enemies
         private EnemyController enemyController;
         public bool TryCut(Vector3 position, Vector3 normal)
         {
-            if (!CanBeCut(position, normal) || !cutGameObject) return false;
+            if (!CanBeCut() || !cutGameObject) return false;
 
             SlicedHull slice = cutGameObject.Slice(position, normal, crossSectionMaterial);
             if (slice != null)
@@ -54,7 +54,7 @@ namespace CuttingEdge.Enemies
         {
             return enemyController;
         }
-        protected virtual bool CanBeCut(Vector3 position, Vector3 normal)
+        public virtual bool CanBeCut()
         {
             return true;
         }

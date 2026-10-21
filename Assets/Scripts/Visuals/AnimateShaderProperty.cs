@@ -24,7 +24,7 @@ public class AnimateShaderProperty : MonoBehaviour
                 {
                     targetRenderer.GetPropertyBlock(propertyBlock);
                     propertyBlock.SetFloat(propertyID, propertyCurve.Evaluate(value));
-                    Debug.Log(value);
+                    //Debug.Log(value);
                     targetRenderer.SetPropertyBlock(propertyBlock);
                 }
             }

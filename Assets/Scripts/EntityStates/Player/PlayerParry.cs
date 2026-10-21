@@ -10,9 +10,9 @@ namespace CuttingEdge.EntityStates.Player
     {
         public Vector2 startScreenPosition;
         public Vector2 endScreenPosition;
-        public const float DURATION = 1f;
-        public const float PARRY_DURATION = 0.7f;
-        public const float PARRY_INVINCIBILITY_DURATION = 0.8f;
+        public const float DURATION = 0.65f;
+        public const float PARRY_DURATION = 0.45f;
+        public const float PARRY_INVINCIBILITY_DURATION = 0.6f;
         public const float PROJECTILE_SPEED_MULT = 3f;
         private bool parrying;
         private HealthComponent healthComponent;

@@ -47,5 +47,22 @@ namespace DSGameUtils
         {
             return new Vector3(vector2.x, 0, vector2.y);
         }
+        public static bool SetSingleton<T>(T singleton, ref T field) where T : MonoBehaviour
+        {
+            if (field)
+            {
+                GameObject.Destroy(singleton.gameObject);
+                return false;
+            }
+            field = singleton;
+            return true;
+        }
+        public static void UnsetSingleton<T>(T singleton, ref T field) where T : MonoBehaviour
+        {
+            if (field == singleton)
+            {
+                field = null;
+            }
+        }
     }
 }

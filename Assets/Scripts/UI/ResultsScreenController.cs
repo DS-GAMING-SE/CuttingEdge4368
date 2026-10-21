@@ -1,6 +1,7 @@
 using CuttingEdge;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -12,6 +13,8 @@ public class ResultsScreenController : MonoBehaviour
     private InputActionAsset inputActions;
     [SerializeField]
     private GameObject resultsScreen;
+    [SerializeField]
+    private TextMeshProUGUI scoreText;
     [SerializeField]
     private Button restartButton;
     [SerializeField]
@@ -35,6 +38,7 @@ public class ResultsScreenController : MonoBehaviour
     private void ShowResultsScreen(GameStateManager.GameState state)
     {
         resultsScreen.SetActive(state == GameStateManager.GameState.Results);
+        scoreText.text = ScoreHUDController.FormatScore(ScoreManager.score);
     }
     private void RestartButtonClicked()
     {

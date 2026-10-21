@@ -28,7 +28,7 @@ namespace CuttingEdge.Enemies
         public void DefeatEnemy()
         {
             InstanceTracker.Remove(this);
-            EnemyManager.onEnemyDefeated?.Invoke(this);
+            EnemyManager.EnemyDefeated(this);
             if (pooledGameObject)
             {
                 pooledGameObject.ReturnToPool();
