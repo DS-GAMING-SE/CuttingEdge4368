@@ -6,7 +6,7 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace CuttingEdge.EntityStates.Player
 {
-    public class PlayerParry : EntityState
+    public class PlayerParry : PlayerState
     {
         public Vector2 startScreenPosition;
         public Vector2 endScreenPosition;
@@ -16,6 +16,7 @@ namespace CuttingEdge.EntityStates.Player
         public const float PROJECTILE_SPEED_MULT = 3f;
         private bool parrying;
         private HealthComponent healthComponent;
+        private bool parryTriggerAnimationPlayed;
         public override void OnEnter()
         {
             base.OnEnter();
@@ -23,6 +24,7 @@ namespace CuttingEdge.EntityStates.Player
             healthComponent.onHit += Parry;
             parrying = true;
             EffectManager.SimpleEffect(Resources.Load<GameObject>("ParryEffect"), transform.position + new Vector3(1, 1, 1), Quaternion.identity);
+            PlayAnimation("AimCut");
         }
         public override void FixedUpdate()
         {
@@ -31,6 +33,7 @@ namespace CuttingEdge.EntityStates.Player
             {
                 parrying = false;
                 healthComponent.onHit -= Parry;
+                if (!parryTriggerAnimationPlayed) PlayAnimation("Cut");
             }
             if (fixedAge > DURATION)
             {
@@ -68,6 +71,8 @@ namespace CuttingEdge.EntityStates.Player
 
                 parrying = false;
                 healthComponent.onHit -= Parry;
+                PlayAnimation("Cut");
+                parryTriggerAnimationPlayed = true;
             }
         }
     }

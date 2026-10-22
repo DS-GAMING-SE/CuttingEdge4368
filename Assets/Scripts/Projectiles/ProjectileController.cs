@@ -47,8 +47,19 @@ namespace CuttingEdge
             set 
             { 
                 _target = value;
-                if (value) homingCenter = value.position;
-                if (homingIndicator) homingIndicator.transform.position = homingCenter;
+                if (value) 
+                { 
+                    homingCenter = value.position;
+                    if (homingIndicator)
+                    {
+                        homingIndicator.transform.position = homingCenter;
+                    }
+                }
+                else if (homingIndicator)
+                {
+                    homingIndicator.ReturnToPool();
+                    homingIndicator = null;
+                }
             }
         }
         private Transform _target;
@@ -98,6 +109,7 @@ namespace CuttingEdge
                 }
             }
             ResetProjectile();
+            UpdateOnPlane();
             UpdateIndicators();
         }
         private void OnDisable()
@@ -109,12 +121,13 @@ namespace CuttingEdge
             if (homingIndicator)
             {
                 homingIndicator.ReturnToPool();
+                homingIndicator = null;
             }
             indicatorAnimates.Clear();
         }
         void Update()
         {
-            transform.position += transform.forward * (speed * Time.deltaTime);
+            transform.position += speed * Time.deltaTime * transform.forward;
             if (suppressPlaneCheckTimer > 0)
             {
                 suppressPlaneCheckTimer -= Time.deltaTime;
@@ -195,7 +208,7 @@ namespace CuttingEdge
             if (other.TryGetComponent<IHurtBox>(out var hurtBox))
             {
                 destroyOnEndOfFrame = true;
-                hurtBox.GetParent().Damage(damage, owner, gameObject);
+                hurtBox.GetDamageable().Damage(damage, owner, gameObject);
             }
         }
         private void LateUpdate()

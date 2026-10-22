@@ -13,6 +13,12 @@ namespace CuttingEdge.Enemies
         private PooledGameObject _pooledGameObject;
         [SerializeField]
         private EntityStateMachine stunOnHit;
+        [Header("Shield")]
+        public bool shielded;
+        [SerializeField]
+        private GameObject shieldEffect;
+        [SerializeField]
+        private GameObject shieldBreakEffectPrefab;
         private void Awake()
         {
             _pooledGameObject = GetComponent<PooledGameObject>();
@@ -20,6 +26,7 @@ namespace CuttingEdge.Enemies
         private void OnEnable()
         {
             InstanceTracker.Add(this);
+            if (shieldEffect) shieldEffect.SetActive(shielded);
         }
         private void OnDisable()
         {
@@ -40,6 +47,13 @@ namespace CuttingEdge.Enemies
         }
         public void Damage(int amount, GameObject attacker, GameObject inflictor)
         {
+            if (shielded)
+            {
+                shielded = false;
+                if (shieldEffect) shieldEffect.SetActive(false);
+                if (shieldBreakEffectPrefab) EffectManager.SimpleEffect(shieldBreakEffectPrefab, transform.position, Quaternion.identity);
+                return;
+            }
             if (stunOnHit)
             {
                 stunOnHit.SetNextState(new EnemyStunned());

@@ -33,15 +33,27 @@ namespace CuttingEdge
             EffectManager.SimpleEffect(Resources.Load<GameObject>("CutMissEffect"), position, Quaternion.LookRotation(direction)).transform.localScale = new Vector3(1, 1, direction.magnitude);
             yield return new WaitForSeconds(DURATION);
             Destroy(meshCollider.sharedMesh);
-            bool cut = false;
+            bool cutBlocked = false;
             for (int i = 0; i < collectedCuts.Count; i++)
             {
-                if (collectedCuts[i].TryCut(position, normal))
+                if (collectedCuts[i].CanBlockCuts())
                 {
-                    cut = true;
+                    cutBlocked = true;
+                    EffectManager.SimpleEffect(Resources.Load<GameObject>("BlockCutEffect"), collectedCuts[i].GetParent().transform.position, Quaternion.identity);
                 }
             }
-            CutManager.onCut?.Invoke(cut);
+            bool cut = false;
+            if (!cutBlocked)
+            {
+                for (int i = 0; i < collectedCuts.Count; i++)
+                {
+                    if (collectedCuts[i].TryCut(position, normal))
+                    {
+                        cut = true;
+                    }
+                }
+            }
+            CutManager.onCut?.Invoke(cutBlocked ? CutManager.CutResults.Blocked : (cut ? CutManager.CutResults.Hit : CutManager.CutResults.Miss));
             collectedCuts.Clear();
             pooledGameObject.ReturnToPool();
         }
@@ -51,16 +63,7 @@ namespace CuttingEdge
             if (!this.isActiveAndEnabled) return;
             if (other.TryGetComponent<ICuttable>(out var cuttable))
             {
-                if (cuttable.CanBeCut())
-                {
-                    collectedCuts.Add(cuttable);
-                }
-                else
-                {
-                    StopCoroutine(coroutine);
-                    collectedCuts.Clear();
-                    pooledGameObject.ReturnToPool();
-                }
+                collectedCuts.Add(cuttable);
             }
         }
     }

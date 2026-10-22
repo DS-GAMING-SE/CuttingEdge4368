@@ -3,7 +3,10 @@ guid: 1bafdb383f858a440bba9ed604336467
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - stunOnHit: {instanceID: 0}
+  - shieldEffect: {instanceID: 0}
+  - shieldBreakEffectPrefab: {fileID: 2630108719194998782, guid: 4d5a35999a39db94a8a61ae118da62e5, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

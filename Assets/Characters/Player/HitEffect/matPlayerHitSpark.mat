@@ -102,7 +102,7 @@ Material:
     - _Parallax: 0.02
     - _SCREENSPACECLOUDS: 0
     - _SmoothnessTextureChannel: 0
-    - _SoftFactor: 1
+    - _SoftFactor: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _USEREMAP: 1
@@ -113,6 +113,7 @@ Material:
     - _Cloud2Scroll: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TintColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4959318626620002347
 MonoBehaviour:

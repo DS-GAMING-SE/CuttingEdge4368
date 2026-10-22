@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
-  defaultSpeed: 30
+  defaultSpeed: 18
   hitEffectPrefab: {fileID: 0}
   damage: 1
   parryable: 1

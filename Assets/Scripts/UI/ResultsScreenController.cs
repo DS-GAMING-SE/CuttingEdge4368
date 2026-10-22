@@ -38,7 +38,7 @@ public class ResultsScreenController : MonoBehaviour
     private void ShowResultsScreen(GameStateManager.GameState state)
     {
         resultsScreen.SetActive(state == GameStateManager.GameState.Results);
-        scoreText.text = ScoreHUDController.FormatScore(ScoreManager.score);
+        scoreText.text = "Score: " +ScoreHUDController.FormatScore(ScoreManager.score);
     }
     private void RestartButtonClicked()
     {

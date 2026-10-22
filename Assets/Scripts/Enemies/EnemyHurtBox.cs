@@ -44,19 +44,27 @@ namespace CuttingEdge.Enemies
                 }
                 else
                 {
-                    GameObject.Destroy(gameObject); //replace with repooling
+                    GameObject.Destroy(gameObject);
                 }
                 return true;
             }
             return false;
         }
-        public IDamageable GetParent()
+        public GameObject GetParent()
+        {
+            return enemyController.gameObject;
+        }
+        public IDamageable GetDamageable()
         {
             return enemyController;
         }
         public virtual bool CanBeCut()
         {
-            return true;
+            return (!enemyController || !enemyController.shielded);
+        }
+        public virtual bool CanBlockCuts()
+        {
+            return enemyController.shielded;
         }
     }
 }

@@ -8,13 +8,13 @@ namespace CuttingEdge
     public class HurtBox : MonoBehaviour, IHurtBox
     {
         public HealthComponent healthComponent;
-        public IDamageable GetParent()
+        public IDamageable GetDamageable()
         {
             return healthComponent;
         }
     }
     public interface IHurtBox
     {
-        public IDamageable GetParent();
+        public IDamageable GetDamageable();
     }
 }

@@ -15,7 +15,7 @@ namespace CuttingEdge
         public const float CUT_WIDTH = 0.3f;
         public static GameObjectPool cutColliderPool;
         [Tooltip("Event for when a cut happens. Bool is whether an enemy was hit")]
-        public static Action<bool> onCut;
+        public static Action<CutResults> onCut;
         public static void Cut(Vector2 startScreenPosition, Vector2 endScreenPosition, float range = CUT_RANGE)
         {
             Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
@@ -92,9 +92,9 @@ namespace CuttingEdge
             return cutColliderPool.GetDeactivated().GetComponent<CutCollider>();
         }
 
-        private static void CutHitEffects(bool hit)
+        private static void CutHitEffects(CutResults hit)
         {
-            if (hit)
+            if (hit == CutResults.Hit)
             {
                 TimeScaleManager.AddTimeScaleOverrideOneShot(0f, 0.7f, 0f, 0.1f, 0f, TimeScaleManager.Priority.High);
                 SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Player/sfxCutHit1"), Resources.Load<AudioClip>("Player/sfxCutHit2"), Resources.Load<AudioClip>("Player/sfxCutHit3"));
@@ -106,6 +106,13 @@ namespace CuttingEdge
         {
             SceneManager.activeSceneChanged += (scene, scene2) => { cutColliderPool?.Clear(); };
             CutManager.onCut += CutHitEffects;
+        }
+
+        public enum CutResults
+        {
+            Miss,
+            Hit,
+            Blocked
         }
     }
 }

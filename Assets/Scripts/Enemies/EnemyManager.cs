@@ -10,12 +10,13 @@ namespace CuttingEdge.Enemies
     public class EnemyManager : MonoBehaviour
     {
         public static EnemyManager instance;
+        public static Action<int> onWaveStarted;
         public static Action<EnemyController> onEnemyDefeated;
         public static Action<int> onEnemiesDefeated;
         private int numQueuedEnemiesDefeated;
         public bool spawningEnemies = false;
         [NonSerialized]
-        public bool enemiesActive = false;
+        public bool enemiesActive;
         private int wave;
         [SerializeField]
         private float timeUntilEnemySpawn = 3f;
@@ -45,6 +46,10 @@ namespace CuttingEdge.Enemies
                 return;
             }
             instance = this;
+        }
+        private void Start()
+        {
+            enemiesActive = InstanceTracker.Any<EnemyController>();
         }
         private void OnDisable()
         {
@@ -77,6 +82,7 @@ namespace CuttingEdge.Enemies
                     {
                         enemiesActive = true;
                     }
+                    onWaveStarted?.Invoke(wave);
                 }
                 if (queuedEnemySpawns.Count > 0)
                 {
