@@ -16,7 +16,7 @@ namespace CuttingEdge
         [RuntimeInitializeOnLoadMethod]
         private static void Initialize()
         {
-            EnemyManager.onEnemiesDefeated += (num) => { if (InstanceTracker.Any<EnemyController>()) return; if (textBox) textBox.SetActive(false); };
+            EnemyManager.onEnemiesDefeated += (num) => { if (InstanceTracker.Any<EnemyController>()) return; HideTutorialTextBox(); };
             EntityStates.GameStates.Gameplay.onGameStarted += () =>
             { SpawnTutorialTextBox("Click and drag to aim a cut attack. Release to cut all enemies between the two points."); };
             EnemyManager.onWaveStarted += (wave) =>
@@ -42,6 +42,13 @@ namespace CuttingEdge
             }
             textBox.SetActive(true);
             textBox.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = text;
+        }
+        public static void HideTutorialTextBox()
+        {
+            if (textBox)
+            {
+                textBox.SetActive(false);
+            }
         }
     }
 }

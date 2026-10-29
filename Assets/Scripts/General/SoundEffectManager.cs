@@ -24,7 +24,7 @@ public static class SoundEffectManager
             audioSourceObject = GameObjectPool.GetOrCreatePooledGameObject(Resources.Load<GameObject>("SoundEffectObject"), ref audioSourcePool);
         }
         AudioSource audioSource = audioSourceObject.GetComponent<AudioSource>();
-        audioSource.PlayOneShot(audioClip);
+        audioSource.PlayOneShot(audioClip, SettingsManager.sfxVolume);
     }
     public static void PlaySound(params AudioClip[] randomAudioClips)
     {

@@ -116,7 +116,7 @@ Material:
     - _Parallax: 0.02
     - _SCREENSPACECLOUDS: 1
     - _SmoothnessTextureChannel: 0
-    - _SoftFactor: 1
+    - _SoftFactor: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _USEREMAP: 1

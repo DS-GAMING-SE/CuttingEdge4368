@@ -73,6 +73,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - SOFTPARTICLES: 0
     - _AlphaBias: 0
     - _AlphaBoost: 5
     - _BUILTIN_AlphaClip: 0
@@ -83,7 +84,7 @@ Material:
     - _BUILTIN_QueueOffset: 0
     - _BUILTIN_SrcBlend: 5
     - _BUILTIN_Surface: 1
-    - _BUILTIN_ZTest: 4
+    - _BUILTIN_ZTest: 8
     - _BUILTIN_ZWrite: 0
     - _BUILTIN_ZWriteControl: 0
     - _BumpScale: 1
@@ -113,6 +114,7 @@ Material:
     - _Cloud2Scroll: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TintColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4769054787207139984
 MonoBehaviour:
