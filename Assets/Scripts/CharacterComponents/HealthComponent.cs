@@ -26,10 +26,11 @@ namespace CuttingEdge
         [SerializeField]
         private GameObject healthBarPrefab;
         private HealthBar healthBar;
+        [SerializeField]
+        private bool onlyShowHealthBarDuringGameplay = true;
 
         public delegate void OnHitDelegate(ref int damage, ref bool rejected, GameObject attacker, GameObject inflictor);
         public event OnHitDelegate onHit;
-        // this will have problems if anything other than the player has healthcomponent, but there's no plans of that happening
         public Action onDeath;
 
         private void Start()
@@ -40,14 +41,35 @@ namespace CuttingEdge
         {
             if (healthBarPrefab) 
             { 
-                healthBar = GameObject.Instantiate(healthBarPrefab).GetComponent<HealthBar>();
-                healthBar.healthComponent = this;
+                if (!onlyShowHealthBarDuringGameplay || (GameStateManager.instance && GameStateManager.instance.state == GameStateManager.GameState.Gameplay))
+                {
+                    CreateHealthBar();
+                }
+                else
+                {
+                    GameStateManager.onGameStateChanged += OnGameStateChanged;
+                }
             }
+        }
+        private void OnGameStateChanged(GameStateManager.GameState state)
+        {
+            if (state == GameStateManager.GameState.Gameplay)
+            {
+                GameStateManager.onGameStateChanged -= OnGameStateChanged;
+                CreateHealthBar();
+            }
+        }
+        private void CreateHealthBar()
+        {
+            if (healthBar) return;
+            healthBar = GameObject.Instantiate(healthBarPrefab).GetComponent<HealthBar>();
+            healthBar.healthComponent = this;
         }
 
         private void OnDisable()
         {
             if (healthBar) Destroy(healthBar);
+            GameStateManager.onGameStateChanged -= OnGameStateChanged;
         }
 
         public void Damage(int amount, GameObject attacker, GameObject inflictor)

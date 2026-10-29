@@ -8,7 +8,7 @@ namespace CuttingEdge.EntityStates.GameStates
 {
     public class GameIntro : EntityState
     {
-        public const float introDuration = 1f;
+        public const float introDuration = 2f;
 
         public override void FixedUpdate()
         {
