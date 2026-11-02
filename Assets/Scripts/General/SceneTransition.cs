@@ -32,6 +32,7 @@ public class SceneTransition : MonoBehaviour
         StartCoroutine(WaitForNextState(transitionInTime));
         screenImage.CrossFadeAlpha(1f, transitionInTime, true);
         text.CrossFadeAlpha(1f, transitionInTime, true);
+        SoundEffectManager.PlaySound(Resources.Load<AudioClip>("UI/sfxSceneTransitionIn"), true);
     }
     private void Update()
     {
@@ -84,6 +85,7 @@ public class SceneTransition : MonoBehaviour
                 screenImage.CrossFadeAlpha(0f, transitionOutTime, true);
                 text.CrossFadeAlpha(0f, transitionOutTime / 2, true);
                 StartCoroutine(WaitForNextState(transitionOutTime));
+                SoundEffectManager.PlaySound(Resources.Load<AudioClip>("UI/sfxSceneTransitionOut"), true);
                 break;
             case State.End:
                 Destroy(gameObject);

@@ -99,6 +99,10 @@ namespace CuttingEdge
                 TimeScaleManager.AddTimeScaleOverrideOneShot(0f, 0.7f, 0f, 0.1f, 0f, TimeScaleManager.Priority.High);
                 SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Player/sfxCutHit1"), Resources.Load<AudioClip>("Player/sfxCutHit2"), Resources.Load<AudioClip>("Player/sfxCutHit3"));
             }
+            else if (hit == CutResults.Blocked)
+            {
+                SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Player/sfxCutHitBlocked"));
+            }
         }
 
         [RuntimeInitializeOnLoadMethod]
