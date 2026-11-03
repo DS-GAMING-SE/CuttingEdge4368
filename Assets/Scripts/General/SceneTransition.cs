@@ -41,7 +41,7 @@ public class SceneTransition : MonoBehaviour
             canvas.worldCamera = Camera.main;
         }
     }
-    public static void StartTransitionToScene(string sceneName, string label = null, float transitionIn = 0.8f, float wait = 1f, float transitionOut = 0.6f)
+    public static void StartTransitionToScene(string sceneName, string label = null, float transitionIn = 0.8f, float wait = 1f, float transitionOut = 0.8f)
     {
         SceneTransition transition = GameObject.Instantiate(Resources.Load<GameObject>("ScreenTransition")).GetComponent<SceneTransition>();
 

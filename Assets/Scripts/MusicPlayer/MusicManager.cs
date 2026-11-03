@@ -46,25 +46,25 @@ public class MusicManager : MonoBehaviour
         SetupMusicPlayers();
     }
 
-    public void Play(AudioClip musicTrack, float fadeTime)
+    public static void Play(AudioClip musicTrack, float fadeTime)
     {
-        if (!musicTrack || musicTrack == activeMusicTrack) return;
+        if (!musicTrack || musicTrack == instance.activeMusicTrack) return;
 
-        if (activeMusicTrack)
+        if (_instance.activeMusicTrack)
         {
-            activeMusicPlayer.Stop(fadeTime);
+            _instance.activeMusicPlayer.Stop(fadeTime);
         }
 
-        SwitchActiveMusicPlayer();
-        activeMusicTrack = musicTrack;
-        activeMusicPlayer.Play(musicTrack, fadeTime);
+        _instance.SwitchActiveMusicPlayer();
+        _instance.activeMusicTrack = musicTrack;
+        _instance.activeMusicPlayer.Play(musicTrack, fadeTime);
     }
-    public void Stop(float fadeTime)
+    public static void Stop(float fadeTime)
     {
-        if (!activeMusicTrack) return;
+        if (_instance && !_instance.activeMusicTrack) return;
 
-        activeMusicTrack = null;
-        activeMusicPlayer.Stop(fadeTime);
+        _instance.activeMusicTrack = null;
+        if (_instance.activeMusicPlayer) _instance.activeMusicPlayer.Stop(fadeTime);
     }
     private void SetupMusicPlayers()
     {

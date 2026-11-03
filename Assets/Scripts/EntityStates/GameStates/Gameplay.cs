@@ -32,7 +32,7 @@ namespace CuttingEdge.EntityStates.GameStates
         {
             if (!InstanceTracker.Any<EnemyController>())
             {
-                MusicManager.instance.Play(Resources.Load<AudioClip>("Music/CuttingEdgeBattle"), 0f);
+                MusicManager.Play(Resources.Load<AudioClip>("Music/CuttingEdgeBattle"), 0f);
             }
         }
         public override void OnExit()
@@ -40,7 +40,7 @@ namespace CuttingEdge.EntityStates.GameStates
             if (EnemyManager.instance) EnemyManager.instance.spawningEnemies = false;
             EnemyManager.onEnemiesDefeated -= StartMusic;
             TutorialManager.HideTutorialTextBox();
-            MusicManager.instance.Stop(2f);
+            MusicManager.Stop(2f);
             base.OnExit();
         }
     }

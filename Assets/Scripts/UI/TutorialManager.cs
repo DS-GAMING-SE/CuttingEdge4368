@@ -23,6 +23,9 @@ namespace CuttingEdge
             {
                 switch (wave)
                 {
+                    case 1:
+                        SpawnTutorialTextBox("Dodge attacks with WASD.");
+                        break;
                     case 5:
                         SpawnTutorialTextBox("Right click to parry incoming projectiles, sending them back towards where you're aiming.");
                         break;

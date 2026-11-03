@@ -18,6 +18,7 @@ public static class SoundEffectManager
         if (dontDestroyOnLoad)
         {
             audioSourceObject = GameObjectPool.GetOrCreatePooledGameObject(Resources.Load<GameObject>("SoundEffectObject"), ref dontDestroyAudioSourcePool);
+            GameObject.DontDestroyOnLoad(audioSourceObject);
         }
         else
         {

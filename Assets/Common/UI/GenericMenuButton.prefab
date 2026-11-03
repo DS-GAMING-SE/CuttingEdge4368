@@ -201,6 +201,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   hoverGameObject: {fileID: 1699167716315045176}
+  hoverSFX: {fileID: 8300000, guid: b32771b862a63b14fb7e349ad987cb29, type: 3}
+  pressedSFX: {fileID: 8300000, guid: c9542be31a157f24099792cc21653197, type: 3}
 --- !u!1 &5600975782164130653
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,7 +296,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 33.4
+  m_fontSize: 30.4
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1

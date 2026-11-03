@@ -42,12 +42,12 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Cloud1Tex:
-        m_Texture: {fileID: 10305, guid: 0000000000000000f000000000000000, type: 0}
+        m_Texture: {fileID: 2800000, guid: bc8ac74cb2ee9124bbc9b0d26b5ec8d0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Cloud2Tex:
-        m_Texture: {fileID: 10305, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 5, y: 10}
+        m_Texture: {fileID: 2800000, guid: acbda5f402336984c87cee767bdc6c35, type: 3}
+        m_Scale: {x: 2, y: 5}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
         m_Texture: {fileID: 0}
@@ -88,7 +88,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaBias: 0
-    - _AlphaBoost: 1
+    - _AlphaBoost: 1.5
     - _BUILTIN_AlphaClip: 0
     - _BUILTIN_Blend: 2
     - _BUILTIN_CullMode: 2
@@ -100,6 +100,7 @@ Material:
     - _BUILTIN_ZTest: 5
     - _BUILTIN_ZWrite: 0
     - _BUILTIN_ZWriteControl: 0
+    - _Boost: 1.5
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DepthOffset: 0
@@ -123,8 +124,8 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Cloud1Scroll: {r: 0, g: 0, b: 0, a: 0}
-    - _Cloud2Scroll: {r: 0, g: 0, b: 0, a: 0}
+    - _Cloud1Scroll: {r: 56, g: -10, b: 0, a: 0}
+    - _Cloud2Scroll: {r: -20, g: 30, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _TintColor: {r: 1, g: 1, b: 1, a: 1}

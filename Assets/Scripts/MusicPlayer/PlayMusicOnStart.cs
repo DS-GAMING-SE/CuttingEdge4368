@@ -15,11 +15,11 @@ public class PlayMusicOnStart : MonoBehaviour
 
     void Start()
     {
-        MusicManager.instance.Play(music, fadeTime);
+        MusicManager.Play(music, fadeTime);
     }
 
     public void StopMusic()
     {
-        MusicManager.instance.Stop(stopFadeTime);
+        MusicManager.Stop(stopFadeTime);
     }
 }

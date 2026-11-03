@@ -22,12 +22,15 @@ namespace DSGameUtils.Pools
         public override GameObject Get()
         {
             GameObject pooledObject = base.Get();
+            if (!pooledObject) { pooledObject = CreateNewPooledObject(); }
             pooledObject.SetActive(true);
             return pooledObject;
         }
         public GameObject GetDeactivated()
         {
-            return base.Get();
+            GameObject pooledObject = base.Get();
+            if (!pooledObject) { pooledObject = CreateNewPooledObject(); }
+            return pooledObject;
         }
         protected override GameObject CreateNewPooledObject()
         {
@@ -48,7 +51,7 @@ namespace DSGameUtils.Pools
         }
         protected override void DestroyObject(GameObject pooledObject)
         {
-            GameObject.Destroy(pooledObject);
+            if (pooledObject) GameObject.Destroy(pooledObject);
         }
         public static GameObject GetOrCreatePooledGameObject(GameObject prefab, ref GameObjectPool pool, bool deactivated = false)
         {

@@ -31,8 +31,8 @@ public class MainMenuController : MonoBehaviour
 
     private void StartButtonClicked()
     {
+        MusicManager.Stop(3f);
         SceneTransition.StartTransitionToScene(startSceneName, "Entering Simulation");
-        MusicManager.instance.Stop(3f);
     }
     private void SetSettingsMenuActive()
     {

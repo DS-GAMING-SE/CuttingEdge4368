@@ -87,6 +87,7 @@ Material:
     - _BUILTIN_ZTest: 8
     - _BUILTIN_ZWrite: 0
     - _BUILTIN_ZWriteControl: 0
+    - _Boost: 1.6
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DepthOffset: 0

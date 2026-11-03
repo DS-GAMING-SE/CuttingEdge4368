@@ -86,6 +86,7 @@ Material:
     - _BUILTIN_ZTest: 4
     - _BUILTIN_ZWrite: 0
     - _BUILTIN_ZWriteControl: 0
+    - _Boost: 4
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DepthOffset: -10
@@ -113,6 +114,7 @@ Material:
     - _Cloud2Scroll: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TintColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &7681715525415886922
 MonoBehaviour:

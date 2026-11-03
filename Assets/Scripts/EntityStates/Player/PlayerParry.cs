@@ -33,6 +33,7 @@ namespace CuttingEdge.EntityStates.Player
             {
                 parrying = false;
                 healthComponent.onHit -= Parry;
+                SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Player/sfxParryMiss"));
                 if (!parryTriggerAnimationPlayed) PlayAnimation("Cut");
             }
             if (fixedAge > DURATION)
@@ -69,6 +70,7 @@ namespace CuttingEdge.EntityStates.Player
                 projectile.transform.rotation = Quaternion.LookRotation(positionOnEnemyPlane - transform.position);
                 projectile.speed *= 2f;
 
+                SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Player/sfxParryHit"));
                 parrying = false;
                 healthComponent.onHit -= Parry;
                 PlayAnimation("Cut");
