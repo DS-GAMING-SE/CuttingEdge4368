@@ -93,6 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3550699327924011302}
   - component: {fileID: 3550507667991800295}
+  - component: {fileID: 8728459882319887286}
   m_Layer: 0
   m_Name: ProjectileIndicator
   m_TagString: Untagged
@@ -134,18 +135,18 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.2
-      inSlope: 1
-      outSlope: 1
+      value: 1.2
+      inSlope: -1
+      outSlope: -1
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 1.2
-      inSlope: 1
-      outSlope: 1
+      value: 0.2
+      inSlope: -1
+      outSlope: -1
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -155,3 +156,17 @@ MonoBehaviour:
     m_RotationOrder: 4
   disableOnEnd: 0
   targetRenderer: {fileID: 5161380782324818805}
+--- !u!114 &8728459882319887286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2310521722173086737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54dac3931d0b2794ea0122fccfedc1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distanceEffect: {fileID: 3550507667991800295}
+  targetingEffect: {fileID: 0}

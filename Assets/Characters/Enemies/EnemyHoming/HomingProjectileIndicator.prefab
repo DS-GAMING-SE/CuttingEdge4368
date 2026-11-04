@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b519deadb7a148740b14b7d12b54a9bf, type: 2}
+  - {fileID: 2100000, guid: 21ceb83fc40c3c34b93aa1f9155c57c7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -92,7 +92,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3550699327924011302}
-  - component: {fileID: 2652311903719744908}
+  - component: {fileID: 3550507667991800295}
+  - component: {fileID: 8728459882319887286}
   m_Layer: 0
   m_Name: HomingProjectileIndicator
   m_TagString: Untagged
@@ -116,7 +117,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2652311903719744908
+--- !u!114 &3550507667991800295
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -134,24 +135,38 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.75
-      inSlope: 0.17797841
-      outSlope: 0.17797841
-      tangentMode: 0
+      value: 1.2
+      inSlope: -1
+      outSlope: -1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.1046875
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 1
-      inSlope: 0.5241089
-      outSlope: 0.5241089
-      tangentMode: 0
+      value: 0.2
+      inSlope: -1
+      outSlope: -1
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0.056249976
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   disableOnEnd: 0
   targetRenderer: {fileID: 5161380782324818805}
+--- !u!114 &8728459882319887286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2310521722173086737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54dac3931d0b2794ea0122fccfedc1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distanceEffect: {fileID: 3550507667991800295}
+  targetingEffect: {fileID: 0}

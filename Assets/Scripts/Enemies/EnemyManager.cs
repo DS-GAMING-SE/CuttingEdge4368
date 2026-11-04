@@ -63,7 +63,7 @@ namespace CuttingEdge.Enemies
             if (!prefab) return null;
 
             GameObject enemy = GameObject.Instantiate(prefab, Plane.enemyPlane.transform);
-            enemy.transform.position = position;
+            enemy.transform.SetPositionAndRotation(position, Quaternion.LookRotation(-Plane.enemyPlane.transform.forward));
 
             return enemy.GetComponent<EnemyController>();
         }

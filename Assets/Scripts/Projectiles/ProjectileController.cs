@@ -38,7 +38,7 @@ namespace CuttingEdge
         [SerializeField]
         private GameObject homingIndicatorPrefab;
         private GameObject homingIndicator;
-        private List<AnimateShaderProperty> indicatorAnimates = new List<AnimateShaderProperty>();
+        private List<IProjectileIndicator> indicatorAnimates = new List<IProjectileIndicator>();
 
         [HideInInspector]
         public Transform target
@@ -63,6 +63,7 @@ namespace CuttingEdge
             }
         }
         private Transform _target;
+        private bool targeting;
 
         [Header("Components")]
         [SerializeField]
@@ -92,7 +93,7 @@ namespace CuttingEdge
             if (indicatorPrefab) 
             { 
                 indicator = DynamicGameObjectPool.CreateOrGetPooledObject(indicatorPrefab); 
-                if (indicator.TryGetComponent<AnimateShaderProperty>(out var indicatorAnimate))
+                if (indicator.TryGetComponent<IProjectileIndicator>(out var indicatorAnimate))
                 {
                     indicatorAnimates.Add(indicatorAnimate);
                 }
@@ -103,7 +104,7 @@ namespace CuttingEdge
                 homingIndicator = DynamicGameObjectPool.CreateOrGetPooledObject(homingIndicatorPrefab);
                 homingIndicator.transform.position = homingCenter;
                 homingIndicator.transform.localScale = new Vector3(homingRadius, homingRadius, homingRadius);
-                if (homingIndicator.TryGetComponent<AnimateShaderProperty>(out var homingIndicatorAnimate))
+                if (homingIndicator.TryGetComponent<IProjectileIndicator>(out var homingIndicatorAnimate))
                 {
                     indicatorAnimates.Add(homingIndicatorAnimate);
                 }
@@ -133,11 +134,13 @@ namespace CuttingEdge
                 suppressPlaneCheckTimer -= Time.deltaTime;
             }
 
+            targeting = false;
             if (target)
             {
                 if (homingRadius > 0 && onPlane && (target.position - homingCenter).sqrMagnitude < homingRadiusSqr)
                 {
                     transform.rotation = Quaternion.LookRotation(target.position - transform.position);//Vector3.RotateTowards(transform.forward, target.position - transform.position, 90f * Time.deltaTime * Mathf.Deg2Rad, Mathf.Infinity));
+                    targeting = true;
                 }
             }
             UpdateOnPlane();
@@ -190,7 +193,8 @@ namespace CuttingEdge
             {
                 foreach (var indicator in indicatorAnimates)
                 {
-                    indicator.alpha = 1 - (distanceToTarget / startDistanceToTarget);
+                    indicator.SetClampedDistance(distanceToTarget / startDistanceToTarget);
+                    indicator.SetTargeting(targeting);
                 }
                 indicator.SetActive(true);
                 indicator.transform.position = targetPointOnPlane;
