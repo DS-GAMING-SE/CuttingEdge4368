@@ -21,7 +21,7 @@ namespace CuttingEdge
         {
             if (healthComponent)
             {
-                healthBarRoot.transform.position = Camera.main.WorldToScreenPoint(healthComponent.transform.position + positionOffset);
+                healthBarRoot.transform.position = healthComponent.transform.position + positionOffset;//Camera.main.WorldToScreenPoint(healthComponent.transform.position + positionOffset);
             }
         }
 

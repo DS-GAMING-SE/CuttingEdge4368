@@ -49,7 +49,7 @@ namespace CuttingEdge
             var scoreToString = score.ToString().ToCharArray();
             for (int i = 0; i < scoreToString.Length; i++)
             {
-                if ((scoreToString.Length - i) % 3 == 0) stringBuilder.Append(" ");
+                if (i != 0 && (scoreToString.Length - i) % 3 == 0) stringBuilder.Append(" ");
                 stringBuilder.Append(scoreToString[i]);
             }
             return stringBuilder.ToString();

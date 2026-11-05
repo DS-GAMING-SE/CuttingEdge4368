@@ -14505,6 +14505,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1206524663608189167}
   - component: {fileID: 3507657061662853705}
+  - component: {fileID: 4617084654294740023}
   m_Layer: 0
   m_Name: EnemyStunEffect
   m_TagString: Untagged
@@ -14543,3 +14544,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidBody: {fileID: 0}
+--- !u!114 &4617084654294740023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8674914107951651739}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05fca44360fae1d4993e002c066fb9f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sound: {fileID: 8300000, guid: 102d815508010944f9019a066a898a0c, type: 3}

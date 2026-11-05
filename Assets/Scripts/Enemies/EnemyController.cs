@@ -52,6 +52,7 @@ namespace CuttingEdge.Enemies
                 shielded = false;
                 if (shieldEffect) shieldEffect.SetActive(false);
                 if (shieldBreakEffectPrefab) EffectManager.SimpleEffect(shieldBreakEffectPrefab, transform.position, Quaternion.identity);
+                SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Enemies/sfxEnemyShieldBreak"));
                 return;
             }
             if (stunOnHit)

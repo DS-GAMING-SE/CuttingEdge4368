@@ -16,6 +16,7 @@ namespace CuttingEdge.EntityStates.Enemy
         {
             base.OnEnter();
             stunEffect = EffectManager.SimpleEffect(Resources.Load<GameObject>("EnemyStunEffect"), transform.position, Quaternion.identity);
+            SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Enemies/sfxEnemyStunned"));
         }
         
         public override void FixedUpdate()

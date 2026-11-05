@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CuttingEdge
 {
@@ -43,12 +44,13 @@ namespace CuttingEdge
         private static void Initialize()
         {
             EnemyManager.onEnemiesDefeated += EnemiesDefeatedScore;
+            SceneManager.activeSceneChanged += (s, s2) => { Reset(); };
         }
         public const int SCORE_PER_ENEMY = 100;
         public const float SCORE_MULT_PER_ENEMY = 0.25f;
         private static void EnemiesDefeatedScore(int numEnemies)
         {
-            AddScore((int)(numEnemies * SCORE_PER_ENEMY * (1 + (SCORE_MULT_PER_ENEMY * numEnemies))));
+            AddScore((int)(numEnemies * SCORE_PER_ENEMY * (1 + (SCORE_MULT_PER_ENEMY * (numEnemies - 1)))));
         }
     }
 }

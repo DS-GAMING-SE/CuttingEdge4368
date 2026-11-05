@@ -54,7 +54,8 @@ namespace CuttingEdge.EntityStates.Enemy
         public override void Update()
         {
             base.Update();
-            transform.position = Vector3.MoveTowards(transform.position, targetMovePosition, movementSpeed * Time.deltaTime);
+            transform.SetPositionAndRotation(Vector3.MoveTowards(transform.position, targetMovePosition, movementSpeed * Time.deltaTime), 
+                PlayerController.player ? Quaternion.LookRotation(PlayerController.player.transform.position - transform.position) : transform.rotation);
         }
     }
 }
