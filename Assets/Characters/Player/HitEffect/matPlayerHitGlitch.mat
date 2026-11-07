@@ -103,7 +103,7 @@ Material:
     - _Boost: 1.5
     - _BumpScale: 1
     - _Cutoff: 0.5
-    - _DepthOffset: 0
+    - _DepthOffset: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _FRESNEL: 0

@@ -1,12 +1,14 @@
-Shader "shaderVFXGraph"
+Shader "shaderVFXWithDepthGraph"
 {
     Properties
     {
+        _TintColor("TintColor", Color) = (1, 1, 1, 1)
         [MainTexture]_MainTex("MainTex", 2D) = "white" {}
         [Toggle(_USEREMAP)]_USEREMAP("UseRemap", Float) = 0
         [NoScaleOffset]_RemapTex("RemapTex", 2D) = "white" {}
-        _SoftFactor("SoftFactor", Range(0, 10)) = 1
+        _SoftFactor("SoftFactor", Range(0, 100)) = 1
         _AlphaBoost("AlphaBoost", Float) = 1
+        _Boost("Boost", Range(1, 20)) = 1
         _AlphaBias("AlphaBias", Range(0, 1)) = 0
         _DepthOffset("DepthOffset", Float) = 0
         _Cloud1Tex("Cloud1Tex", 2D) = "white" {}
@@ -390,6 +392,8 @@ Shader "shaderVFXGraph"
         float2 _Cloud2Scroll;
         float _FresnelPower;
         float _AlphaBias;
+        float4 _TintColor;
+        float _Boost;
         CBUFFER_END
         
         // Object and Global properties
@@ -419,11 +423,6 @@ Shader "shaderVFXGraph"
         
         // Graph Functions
         
-        void Unity_Comparison_Equal_float(float A, float B, out float Out)
-        {
-            Out = A == B ? 1 : 0;
-        }
-        
         void Unity_Multiply_float_float(float A, float B, out float Out)
         {
             Out = A * B;
@@ -444,6 +443,21 @@ Shader "shaderVFXGraph"
             Out = A * B;
         }
         
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_Divide_float(float A, float B, out float Out)
+        {
+            Out = A / B;
+        }
+        
+        void Unity_Comparison_Equal_float(float A, float B, out float Out)
+        {
+            Out = A == B ? 1 : 0;
+        }
+        
         void Unity_SceneDepth_Eye_float(float4 UV, out float Out)
         {
             if (unity_OrthoParams.w == 1.0)
@@ -461,6 +475,11 @@ Shader "shaderVFXGraph"
             Out = A - B;
         }
         
+        void Unity_Maximum_float(float A, float B, out float Out)
+        {
+            Out = max(A, B);
+        }
+        
         void Unity_Smoothstep_float(float Edge1, float Edge2, float In, out float Out)
         {
             Out = smoothstep(Edge1, Edge2, In);
@@ -469,11 +488,6 @@ Shader "shaderVFXGraph"
         void Unity_Branch_float(float Predicate, float True, float False, out float Out)
         {
             Out = Predicate ? True : False;
-        }
-        
-        void Unity_Add_float(float A, float B, out float Out)
-        {
-            Out = A + B;
         }
         
         void Unity_FresnelEffect_float(float3 Normal, float3 ViewDir, float Power, out float Out)
@@ -523,13 +537,6 @@ Shader "shaderVFXGraph"
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_53bf16ec63664970a125c3d28a00d335_Out_0 = UnityBuildTexture2DStructNoScale(_RemapTex);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_65dc07be38274136abae4d13b83b9188_Out_0 = _SoftFactor;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2;
-            Unity_Comparison_Equal_float(_Property_65dc07be38274136abae4d13b83b9188_Out_0, 0, _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_b3b4406f1a5346e39c355b60a6a4bfda_Out_0 = UnityBuildTexture2DStruct(_MainTex);
@@ -615,7 +622,47 @@ Shader "shaderVFXGraph"
             float _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4 = _Multiply_e73cc35e9540498a9639d08f4179ed91_Out_2[3];
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            float _Add_8cd2984ed8734f7a85152926e6396be9_Out_2;
+            Unity_Add_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_R_1, _Split_34d10082dc344cf2b9180b8cfbfaef17_G_2, _Add_8cd2984ed8734f7a85152926e6396be9_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_a85141fe3a3a4651922699bb54521752_Out_2;
+            Unity_Add_float(_Add_8cd2984ed8734f7a85152926e6396be9_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_B_3, _Add_a85141fe3a3a4651922699bb54521752_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2;
+            Unity_Divide_float(_Add_a85141fe3a3a4651922699bb54521752_Out_2, 3, _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_9292fd0466bd4a7d971327efbc1b741b_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2;
+            Unity_Comparison_Equal_float(_Property_9292fd0466bd4a7d971327efbc1b741b_Out_0, 0, _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
+            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_5790ed5479234d168aa09050fa416be0_R_1 = IN.VertexColor[0];
+            float _Split_5790ed5479234d168aa09050fa416be0_G_2 = IN.VertexColor[1];
+            float _Split_5790ed5479234d168aa09050fa416be0_B_3 = IN.VertexColor[2];
+            float _Split_5790ed5479234d168aa09050fa416be0_A_4 = IN.VertexColor[3];
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2;
+            Unity_Multiply_float_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Split_5790ed5479234d168aa09050fa416be0_A_4, _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            Unity_Add_float(_Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1;
@@ -635,30 +682,27 @@ Shader "shaderVFXGraph"
             Unity_Subtract_float(_SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1, _Split_833ee774a1a842c48545ce6e397fc8e1_A_4, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2;
+            Unity_Maximum_float(0.001, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_59880824fa38412da03f531e578cce41_Out_2;
+            Unity_Divide_float(_Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2, _Divide_59880824fa38412da03f531e578cce41_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3;
-            Unity_Smoothstep_float(0, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
+            Unity_Smoothstep_float(0, 1, _Divide_59880824fa38412da03f531e578cce41_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2;
-            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
+            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3;
-            Unity_Branch_float(_Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
-            Unity_Multiply_float_float(_Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
-            Unity_Add_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
+            float _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
+            Unity_Branch_float(_Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_e8b5ac9e0461458eb05b1949d3c3bb9b_Out_0 = _FresnelPower;
@@ -669,21 +713,21 @@ Shader "shaderVFXGraph"
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
-            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
-            Unity_Add_float(_Multiply_3e4e7431650344d4a51c484968028926_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_7d5232a12f1644c59e74bda8e5537528_Out_2);
+            Unity_Multiply_float_float(_Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             #if defined(_FRESNEL)
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
             #else
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, 0);
+            float _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2;
+            Unity_Multiply_float_float(_Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2, _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2, 0);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float4 _SampleTexture2D_6f8157eadf4a4f179424674c7e985011_RGBA_0 = SAMPLE_TEXTURE2D(_Property_53bf16ec63664970a125c3d28a00d335_Out_0.tex, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.samplerstate, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.GetTransformedUV(_Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0));
@@ -703,17 +747,34 @@ Shader "shaderVFXGraph"
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
-            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, IN.VertexColor, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
+            float4 _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0 = float4((IN.VertexColor).x, (IN.VertexColor).x, (IN.VertexColor).x, 1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Split_6b22018cfb0342e4a139347b40431522_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
-            float _Split_6b22018cfb0342e4a139347b40431522_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
-            float _Split_6b22018cfb0342e4a139347b40431522_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
-            float _Split_6b22018cfb0342e4a139347b40431522_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
+            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
             #endif
-            surface.BaseColor = (_Multiply_507c508b58b448fba1520fb4be40a28f_Out_2.xyz);
-            surface.Alpha = _Split_6b22018cfb0342e4a139347b40431522_A_4;
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Property_418fda15bcef43fea5e5edbfba06ddad_Out_0 = _TintColor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Multiply_fde31bb8ac634e0a817395d0ae1d7dda_Out_2;
+            Unity_Multiply_float4_float4(_Multiply_507c508b58b448fba1520fb4be40a28f_Out_2, _Property_418fda15bcef43fea5e5edbfba06ddad_Out_0, _Multiply_fde31bb8ac634e0a817395d0ae1d7dda_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_7c9ba2d81b6c4dbda01cd5781043d679_Out_0 = _Boost;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Multiply_4d1c1feceabb4ee6afe82f1f80d38359_Out_2;
+            Unity_Multiply_float4_float4(_Multiply_fde31bb8ac634e0a817395d0ae1d7dda_Out_2, (_Property_7c9ba2d81b6c4dbda01cd5781043d679_Out_0.xxxx), _Multiply_4d1c1feceabb4ee6afe82f1f80d38359_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_c9e912c3f79e437f801f1662d1890a33_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            #endif
+            surface.BaseColor = (_Multiply_4d1c1feceabb4ee6afe82f1f80d38359_Out_2.xyz);
+            surface.Alpha = _Split_c9e912c3f79e437f801f1662d1890a33_A_4;
             surface.AlphaClipThreshold = 0.5;
             return surface;
         }
@@ -920,6 +981,7 @@ Shader "shaderVFXGraph"
             {
                 "LightMode" = "DepthOnly"
             }
+            Offset [_DepthOffset], -1
         
         // Render State
         Cull [_BUILTIN_CullMode]
@@ -1260,6 +1322,8 @@ Shader "shaderVFXGraph"
         float2 _Cloud2Scroll;
         float _FresnelPower;
         float _AlphaBias;
+        float4 _TintColor;
+        float _Boost;
         CBUFFER_END
         
         // Object and Global properties
@@ -1289,11 +1353,6 @@ Shader "shaderVFXGraph"
         
         // Graph Functions
         
-        void Unity_Comparison_Equal_float(float A, float B, out float Out)
-        {
-            Out = A == B ? 1 : 0;
-        }
-        
         void Unity_Multiply_float_float(float A, float B, out float Out)
         {
             Out = A * B;
@@ -1314,6 +1373,21 @@ Shader "shaderVFXGraph"
             Out = A * B;
         }
         
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_Divide_float(float A, float B, out float Out)
+        {
+            Out = A / B;
+        }
+        
+        void Unity_Comparison_Equal_float(float A, float B, out float Out)
+        {
+            Out = A == B ? 1 : 0;
+        }
+        
         void Unity_SceneDepth_Eye_float(float4 UV, out float Out)
         {
             if (unity_OrthoParams.w == 1.0)
@@ -1331,6 +1405,11 @@ Shader "shaderVFXGraph"
             Out = A - B;
         }
         
+        void Unity_Maximum_float(float A, float B, out float Out)
+        {
+            Out = max(A, B);
+        }
+        
         void Unity_Smoothstep_float(float Edge1, float Edge2, float In, out float Out)
         {
             Out = smoothstep(Edge1, Edge2, In);
@@ -1339,11 +1418,6 @@ Shader "shaderVFXGraph"
         void Unity_Branch_float(float Predicate, float True, float False, out float Out)
         {
             Out = Predicate ? True : False;
-        }
-        
-        void Unity_Add_float(float A, float B, out float Out)
-        {
-            Out = A + B;
         }
         
         void Unity_FresnelEffect_float(float3 Normal, float3 ViewDir, float Power, out float Out)
@@ -1392,13 +1466,6 @@ Shader "shaderVFXGraph"
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_53bf16ec63664970a125c3d28a00d335_Out_0 = UnityBuildTexture2DStructNoScale(_RemapTex);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_65dc07be38274136abae4d13b83b9188_Out_0 = _SoftFactor;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2;
-            Unity_Comparison_Equal_float(_Property_65dc07be38274136abae4d13b83b9188_Out_0, 0, _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_b3b4406f1a5346e39c355b60a6a4bfda_Out_0 = UnityBuildTexture2DStruct(_MainTex);
@@ -1484,7 +1551,47 @@ Shader "shaderVFXGraph"
             float _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4 = _Multiply_e73cc35e9540498a9639d08f4179ed91_Out_2[3];
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            float _Add_8cd2984ed8734f7a85152926e6396be9_Out_2;
+            Unity_Add_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_R_1, _Split_34d10082dc344cf2b9180b8cfbfaef17_G_2, _Add_8cd2984ed8734f7a85152926e6396be9_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_a85141fe3a3a4651922699bb54521752_Out_2;
+            Unity_Add_float(_Add_8cd2984ed8734f7a85152926e6396be9_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_B_3, _Add_a85141fe3a3a4651922699bb54521752_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2;
+            Unity_Divide_float(_Add_a85141fe3a3a4651922699bb54521752_Out_2, 3, _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_9292fd0466bd4a7d971327efbc1b741b_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2;
+            Unity_Comparison_Equal_float(_Property_9292fd0466bd4a7d971327efbc1b741b_Out_0, 0, _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
+            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_5790ed5479234d168aa09050fa416be0_R_1 = IN.VertexColor[0];
+            float _Split_5790ed5479234d168aa09050fa416be0_G_2 = IN.VertexColor[1];
+            float _Split_5790ed5479234d168aa09050fa416be0_B_3 = IN.VertexColor[2];
+            float _Split_5790ed5479234d168aa09050fa416be0_A_4 = IN.VertexColor[3];
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2;
+            Unity_Multiply_float_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Split_5790ed5479234d168aa09050fa416be0_A_4, _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            Unity_Add_float(_Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1;
@@ -1504,30 +1611,27 @@ Shader "shaderVFXGraph"
             Unity_Subtract_float(_SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1, _Split_833ee774a1a842c48545ce6e397fc8e1_A_4, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2;
+            Unity_Maximum_float(0.001, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_59880824fa38412da03f531e578cce41_Out_2;
+            Unity_Divide_float(_Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2, _Divide_59880824fa38412da03f531e578cce41_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3;
-            Unity_Smoothstep_float(0, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
+            Unity_Smoothstep_float(0, 1, _Divide_59880824fa38412da03f531e578cce41_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2;
-            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
+            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3;
-            Unity_Branch_float(_Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
-            Unity_Multiply_float_float(_Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
-            Unity_Add_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
+            float _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
+            Unity_Branch_float(_Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_e8b5ac9e0461458eb05b1949d3c3bb9b_Out_0 = _FresnelPower;
@@ -1538,21 +1642,21 @@ Shader "shaderVFXGraph"
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
-            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
-            Unity_Add_float(_Multiply_3e4e7431650344d4a51c484968028926_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_7d5232a12f1644c59e74bda8e5537528_Out_2);
+            Unity_Multiply_float_float(_Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             #if defined(_FRESNEL)
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
             #else
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, 0);
+            float _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2;
+            Unity_Multiply_float_float(_Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2, _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2, 0);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float4 _SampleTexture2D_6f8157eadf4a4f179424674c7e985011_RGBA_0 = SAMPLE_TEXTURE2D(_Property_53bf16ec63664970a125c3d28a00d335_Out_0.tex, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.samplerstate, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.GetTransformedUV(_Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0));
@@ -1572,16 +1676,19 @@ Shader "shaderVFXGraph"
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
-            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, IN.VertexColor, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
+            float4 _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0 = float4((IN.VertexColor).x, (IN.VertexColor).x, (IN.VertexColor).x, 1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Split_6b22018cfb0342e4a139347b40431522_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
-            float _Split_6b22018cfb0342e4a139347b40431522_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
-            float _Split_6b22018cfb0342e4a139347b40431522_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
-            float _Split_6b22018cfb0342e4a139347b40431522_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
+            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
             #endif
-            surface.Alpha = _Split_6b22018cfb0342e4a139347b40431522_A_4;
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_c9e912c3f79e437f801f1662d1890a33_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            #endif
+            surface.Alpha = _Split_c9e912c3f79e437f801f1662d1890a33_A_4;
             surface.AlphaClipThreshold = 0.5;
             return surface;
         }
@@ -1788,6 +1895,7 @@ Shader "shaderVFXGraph"
             {
                 "LightMode" = "ShadowCaster"
             }
+            Offset [_DepthOffset], -1
         
         // Render State
         Cull [_BUILTIN_CullMode]
@@ -2130,6 +2238,8 @@ Shader "shaderVFXGraph"
         float2 _Cloud2Scroll;
         float _FresnelPower;
         float _AlphaBias;
+        float4 _TintColor;
+        float _Boost;
         CBUFFER_END
         
         // Object and Global properties
@@ -2159,11 +2269,6 @@ Shader "shaderVFXGraph"
         
         // Graph Functions
         
-        void Unity_Comparison_Equal_float(float A, float B, out float Out)
-        {
-            Out = A == B ? 1 : 0;
-        }
-        
         void Unity_Multiply_float_float(float A, float B, out float Out)
         {
             Out = A * B;
@@ -2184,6 +2289,21 @@ Shader "shaderVFXGraph"
             Out = A * B;
         }
         
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_Divide_float(float A, float B, out float Out)
+        {
+            Out = A / B;
+        }
+        
+        void Unity_Comparison_Equal_float(float A, float B, out float Out)
+        {
+            Out = A == B ? 1 : 0;
+        }
+        
         void Unity_SceneDepth_Eye_float(float4 UV, out float Out)
         {
             if (unity_OrthoParams.w == 1.0)
@@ -2201,6 +2321,11 @@ Shader "shaderVFXGraph"
             Out = A - B;
         }
         
+        void Unity_Maximum_float(float A, float B, out float Out)
+        {
+            Out = max(A, B);
+        }
+        
         void Unity_Smoothstep_float(float Edge1, float Edge2, float In, out float Out)
         {
             Out = smoothstep(Edge1, Edge2, In);
@@ -2209,11 +2334,6 @@ Shader "shaderVFXGraph"
         void Unity_Branch_float(float Predicate, float True, float False, out float Out)
         {
             Out = Predicate ? True : False;
-        }
-        
-        void Unity_Add_float(float A, float B, out float Out)
-        {
-            Out = A + B;
         }
         
         void Unity_FresnelEffect_float(float3 Normal, float3 ViewDir, float Power, out float Out)
@@ -2262,13 +2382,6 @@ Shader "shaderVFXGraph"
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_53bf16ec63664970a125c3d28a00d335_Out_0 = UnityBuildTexture2DStructNoScale(_RemapTex);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_65dc07be38274136abae4d13b83b9188_Out_0 = _SoftFactor;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2;
-            Unity_Comparison_Equal_float(_Property_65dc07be38274136abae4d13b83b9188_Out_0, 0, _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_b3b4406f1a5346e39c355b60a6a4bfda_Out_0 = UnityBuildTexture2DStruct(_MainTex);
@@ -2354,7 +2467,47 @@ Shader "shaderVFXGraph"
             float _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4 = _Multiply_e73cc35e9540498a9639d08f4179ed91_Out_2[3];
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            float _Add_8cd2984ed8734f7a85152926e6396be9_Out_2;
+            Unity_Add_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_R_1, _Split_34d10082dc344cf2b9180b8cfbfaef17_G_2, _Add_8cd2984ed8734f7a85152926e6396be9_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_a85141fe3a3a4651922699bb54521752_Out_2;
+            Unity_Add_float(_Add_8cd2984ed8734f7a85152926e6396be9_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_B_3, _Add_a85141fe3a3a4651922699bb54521752_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2;
+            Unity_Divide_float(_Add_a85141fe3a3a4651922699bb54521752_Out_2, 3, _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_9292fd0466bd4a7d971327efbc1b741b_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2;
+            Unity_Comparison_Equal_float(_Property_9292fd0466bd4a7d971327efbc1b741b_Out_0, 0, _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
+            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_5790ed5479234d168aa09050fa416be0_R_1 = IN.VertexColor[0];
+            float _Split_5790ed5479234d168aa09050fa416be0_G_2 = IN.VertexColor[1];
+            float _Split_5790ed5479234d168aa09050fa416be0_B_3 = IN.VertexColor[2];
+            float _Split_5790ed5479234d168aa09050fa416be0_A_4 = IN.VertexColor[3];
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2;
+            Unity_Multiply_float_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Split_5790ed5479234d168aa09050fa416be0_A_4, _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            Unity_Add_float(_Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1;
@@ -2374,30 +2527,27 @@ Shader "shaderVFXGraph"
             Unity_Subtract_float(_SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1, _Split_833ee774a1a842c48545ce6e397fc8e1_A_4, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2;
+            Unity_Maximum_float(0.001, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_59880824fa38412da03f531e578cce41_Out_2;
+            Unity_Divide_float(_Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2, _Divide_59880824fa38412da03f531e578cce41_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3;
-            Unity_Smoothstep_float(0, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
+            Unity_Smoothstep_float(0, 1, _Divide_59880824fa38412da03f531e578cce41_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2;
-            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
+            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3;
-            Unity_Branch_float(_Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
-            Unity_Multiply_float_float(_Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
-            Unity_Add_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
+            float _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
+            Unity_Branch_float(_Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_e8b5ac9e0461458eb05b1949d3c3bb9b_Out_0 = _FresnelPower;
@@ -2408,21 +2558,21 @@ Shader "shaderVFXGraph"
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
-            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
-            Unity_Add_float(_Multiply_3e4e7431650344d4a51c484968028926_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_7d5232a12f1644c59e74bda8e5537528_Out_2);
+            Unity_Multiply_float_float(_Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             #if defined(_FRESNEL)
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
             #else
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, 0);
+            float _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2;
+            Unity_Multiply_float_float(_Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2, _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2, 0);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float4 _SampleTexture2D_6f8157eadf4a4f179424674c7e985011_RGBA_0 = SAMPLE_TEXTURE2D(_Property_53bf16ec63664970a125c3d28a00d335_Out_0.tex, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.samplerstate, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.GetTransformedUV(_Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0));
@@ -2442,16 +2592,19 @@ Shader "shaderVFXGraph"
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
-            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, IN.VertexColor, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
+            float4 _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0 = float4((IN.VertexColor).x, (IN.VertexColor).x, (IN.VertexColor).x, 1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Split_6b22018cfb0342e4a139347b40431522_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
-            float _Split_6b22018cfb0342e4a139347b40431522_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
-            float _Split_6b22018cfb0342e4a139347b40431522_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
-            float _Split_6b22018cfb0342e4a139347b40431522_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
+            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
             #endif
-            surface.Alpha = _Split_6b22018cfb0342e4a139347b40431522_A_4;
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_c9e912c3f79e437f801f1662d1890a33_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            #endif
+            surface.Alpha = _Split_c9e912c3f79e437f801f1662d1890a33_A_4;
             surface.AlphaClipThreshold = 0.5;
             return surface;
         }
@@ -2658,6 +2811,7 @@ Shader "shaderVFXGraph"
             {
                 "LightMode" = "SceneSelectionPass"
             }
+            Offset [_DepthOffset], -1
         
         // Render State
         Cull Off
@@ -2996,6 +3150,8 @@ Shader "shaderVFXGraph"
         float2 _Cloud2Scroll;
         float _FresnelPower;
         float _AlphaBias;
+        float4 _TintColor;
+        float _Boost;
         CBUFFER_END
         
         // Object and Global properties
@@ -3025,11 +3181,6 @@ Shader "shaderVFXGraph"
         
         // Graph Functions
         
-        void Unity_Comparison_Equal_float(float A, float B, out float Out)
-        {
-            Out = A == B ? 1 : 0;
-        }
-        
         void Unity_Multiply_float_float(float A, float B, out float Out)
         {
             Out = A * B;
@@ -3050,6 +3201,21 @@ Shader "shaderVFXGraph"
             Out = A * B;
         }
         
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_Divide_float(float A, float B, out float Out)
+        {
+            Out = A / B;
+        }
+        
+        void Unity_Comparison_Equal_float(float A, float B, out float Out)
+        {
+            Out = A == B ? 1 : 0;
+        }
+        
         void Unity_SceneDepth_Eye_float(float4 UV, out float Out)
         {
             if (unity_OrthoParams.w == 1.0)
@@ -3067,6 +3233,11 @@ Shader "shaderVFXGraph"
             Out = A - B;
         }
         
+        void Unity_Maximum_float(float A, float B, out float Out)
+        {
+            Out = max(A, B);
+        }
+        
         void Unity_Smoothstep_float(float Edge1, float Edge2, float In, out float Out)
         {
             Out = smoothstep(Edge1, Edge2, In);
@@ -3075,11 +3246,6 @@ Shader "shaderVFXGraph"
         void Unity_Branch_float(float Predicate, float True, float False, out float Out)
         {
             Out = Predicate ? True : False;
-        }
-        
-        void Unity_Add_float(float A, float B, out float Out)
-        {
-            Out = A + B;
         }
         
         void Unity_FresnelEffect_float(float3 Normal, float3 ViewDir, float Power, out float Out)
@@ -3128,13 +3294,6 @@ Shader "shaderVFXGraph"
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_53bf16ec63664970a125c3d28a00d335_Out_0 = UnityBuildTexture2DStructNoScale(_RemapTex);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_65dc07be38274136abae4d13b83b9188_Out_0 = _SoftFactor;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2;
-            Unity_Comparison_Equal_float(_Property_65dc07be38274136abae4d13b83b9188_Out_0, 0, _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_b3b4406f1a5346e39c355b60a6a4bfda_Out_0 = UnityBuildTexture2DStruct(_MainTex);
@@ -3220,7 +3379,47 @@ Shader "shaderVFXGraph"
             float _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4 = _Multiply_e73cc35e9540498a9639d08f4179ed91_Out_2[3];
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            float _Add_8cd2984ed8734f7a85152926e6396be9_Out_2;
+            Unity_Add_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_R_1, _Split_34d10082dc344cf2b9180b8cfbfaef17_G_2, _Add_8cd2984ed8734f7a85152926e6396be9_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_a85141fe3a3a4651922699bb54521752_Out_2;
+            Unity_Add_float(_Add_8cd2984ed8734f7a85152926e6396be9_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_B_3, _Add_a85141fe3a3a4651922699bb54521752_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2;
+            Unity_Divide_float(_Add_a85141fe3a3a4651922699bb54521752_Out_2, 3, _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_9292fd0466bd4a7d971327efbc1b741b_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2;
+            Unity_Comparison_Equal_float(_Property_9292fd0466bd4a7d971327efbc1b741b_Out_0, 0, _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
+            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_5790ed5479234d168aa09050fa416be0_R_1 = IN.VertexColor[0];
+            float _Split_5790ed5479234d168aa09050fa416be0_G_2 = IN.VertexColor[1];
+            float _Split_5790ed5479234d168aa09050fa416be0_B_3 = IN.VertexColor[2];
+            float _Split_5790ed5479234d168aa09050fa416be0_A_4 = IN.VertexColor[3];
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2;
+            Unity_Multiply_float_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Split_5790ed5479234d168aa09050fa416be0_A_4, _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            Unity_Add_float(_Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1;
@@ -3240,30 +3439,27 @@ Shader "shaderVFXGraph"
             Unity_Subtract_float(_SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1, _Split_833ee774a1a842c48545ce6e397fc8e1_A_4, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2;
+            Unity_Maximum_float(0.001, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_59880824fa38412da03f531e578cce41_Out_2;
+            Unity_Divide_float(_Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2, _Divide_59880824fa38412da03f531e578cce41_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3;
-            Unity_Smoothstep_float(0, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
+            Unity_Smoothstep_float(0, 1, _Divide_59880824fa38412da03f531e578cce41_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2;
-            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
+            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3;
-            Unity_Branch_float(_Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
-            Unity_Multiply_float_float(_Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
-            Unity_Add_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
+            float _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
+            Unity_Branch_float(_Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_e8b5ac9e0461458eb05b1949d3c3bb9b_Out_0 = _FresnelPower;
@@ -3274,21 +3470,21 @@ Shader "shaderVFXGraph"
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
-            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
-            Unity_Add_float(_Multiply_3e4e7431650344d4a51c484968028926_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_7d5232a12f1644c59e74bda8e5537528_Out_2);
+            Unity_Multiply_float_float(_Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             #if defined(_FRESNEL)
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
             #else
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, 0);
+            float _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2;
+            Unity_Multiply_float_float(_Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2, _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2, 0);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float4 _SampleTexture2D_6f8157eadf4a4f179424674c7e985011_RGBA_0 = SAMPLE_TEXTURE2D(_Property_53bf16ec63664970a125c3d28a00d335_Out_0.tex, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.samplerstate, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.GetTransformedUV(_Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0));
@@ -3308,16 +3504,19 @@ Shader "shaderVFXGraph"
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
-            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, IN.VertexColor, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
+            float4 _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0 = float4((IN.VertexColor).x, (IN.VertexColor).x, (IN.VertexColor).x, 1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Split_6b22018cfb0342e4a139347b40431522_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
-            float _Split_6b22018cfb0342e4a139347b40431522_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
-            float _Split_6b22018cfb0342e4a139347b40431522_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
-            float _Split_6b22018cfb0342e4a139347b40431522_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
+            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
             #endif
-            surface.Alpha = _Split_6b22018cfb0342e4a139347b40431522_A_4;
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_c9e912c3f79e437f801f1662d1890a33_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            #endif
+            surface.Alpha = _Split_c9e912c3f79e437f801f1662d1890a33_A_4;
             surface.AlphaClipThreshold = 0.5;
             return surface;
         }
@@ -3524,6 +3723,7 @@ Shader "shaderVFXGraph"
             {
                 "LightMode" = "Picking"
             }
+            Offset [_DepthOffset], -1
         
         // Render State
         Cull [_BUILTIN_CullMode]
@@ -3862,6 +4062,8 @@ Shader "shaderVFXGraph"
         float2 _Cloud2Scroll;
         float _FresnelPower;
         float _AlphaBias;
+        float4 _TintColor;
+        float _Boost;
         CBUFFER_END
         
         // Object and Global properties
@@ -3891,11 +4093,6 @@ Shader "shaderVFXGraph"
         
         // Graph Functions
         
-        void Unity_Comparison_Equal_float(float A, float B, out float Out)
-        {
-            Out = A == B ? 1 : 0;
-        }
-        
         void Unity_Multiply_float_float(float A, float B, out float Out)
         {
             Out = A * B;
@@ -3916,6 +4113,21 @@ Shader "shaderVFXGraph"
             Out = A * B;
         }
         
+        void Unity_Add_float(float A, float B, out float Out)
+        {
+            Out = A + B;
+        }
+        
+        void Unity_Divide_float(float A, float B, out float Out)
+        {
+            Out = A / B;
+        }
+        
+        void Unity_Comparison_Equal_float(float A, float B, out float Out)
+        {
+            Out = A == B ? 1 : 0;
+        }
+        
         void Unity_SceneDepth_Eye_float(float4 UV, out float Out)
         {
             if (unity_OrthoParams.w == 1.0)
@@ -3933,6 +4145,11 @@ Shader "shaderVFXGraph"
             Out = A - B;
         }
         
+        void Unity_Maximum_float(float A, float B, out float Out)
+        {
+            Out = max(A, B);
+        }
+        
         void Unity_Smoothstep_float(float Edge1, float Edge2, float In, out float Out)
         {
             Out = smoothstep(Edge1, Edge2, In);
@@ -3941,11 +4158,6 @@ Shader "shaderVFXGraph"
         void Unity_Branch_float(float Predicate, float True, float False, out float Out)
         {
             Out = Predicate ? True : False;
-        }
-        
-        void Unity_Add_float(float A, float B, out float Out)
-        {
-            Out = A + B;
         }
         
         void Unity_FresnelEffect_float(float3 Normal, float3 ViewDir, float Power, out float Out)
@@ -3994,13 +4206,6 @@ Shader "shaderVFXGraph"
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_53bf16ec63664970a125c3d28a00d335_Out_0 = UnityBuildTexture2DStructNoScale(_RemapTex);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_65dc07be38274136abae4d13b83b9188_Out_0 = _SoftFactor;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2;
-            Unity_Comparison_Equal_float(_Property_65dc07be38274136abae4d13b83b9188_Out_0, 0, _Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             UnityTexture2D _Property_b3b4406f1a5346e39c355b60a6a4bfda_Out_0 = UnityBuildTexture2DStruct(_MainTex);
@@ -4086,7 +4291,47 @@ Shader "shaderVFXGraph"
             float _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4 = _Multiply_e73cc35e9540498a9639d08f4179ed91_Out_2[3];
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            float _Add_8cd2984ed8734f7a85152926e6396be9_Out_2;
+            Unity_Add_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_R_1, _Split_34d10082dc344cf2b9180b8cfbfaef17_G_2, _Add_8cd2984ed8734f7a85152926e6396be9_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_a85141fe3a3a4651922699bb54521752_Out_2;
+            Unity_Add_float(_Add_8cd2984ed8734f7a85152926e6396be9_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_B_3, _Add_a85141fe3a3a4651922699bb54521752_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2;
+            Unity_Divide_float(_Add_a85141fe3a3a4651922699bb54521752_Out_2, 3, _Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_9292fd0466bd4a7d971327efbc1b741b_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2;
+            Unity_Comparison_Equal_float(_Property_9292fd0466bd4a7d971327efbc1b741b_Out_0, 0, _Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
+            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_5790ed5479234d168aa09050fa416be0_R_1 = IN.VertexColor[0];
+            float _Split_5790ed5479234d168aa09050fa416be0_G_2 = IN.VertexColor[1];
+            float _Split_5790ed5479234d168aa09050fa416be0_B_3 = IN.VertexColor[2];
+            float _Split_5790ed5479234d168aa09050fa416be0_A_4 = IN.VertexColor[3];
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2;
+            Unity_Multiply_float_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Split_5790ed5479234d168aa09050fa416be0_A_4, _Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            Unity_Add_float(_Multiply_2473370f7f9f4a898d8c3bfb7f12ebd4_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1;
@@ -4106,30 +4351,27 @@ Shader "shaderVFXGraph"
             Unity_Subtract_float(_SceneDepth_f18574fd12c94fb0bdcf52f48d451385_Out_1, _Split_833ee774a1a842c48545ce6e397fc8e1_A_4, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0 = _SoftFactor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2;
+            Unity_Maximum_float(0.001, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Divide_59880824fa38412da03f531e578cce41_Out_2;
+            Unity_Divide_float(_Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Maximum_ba6745dfd0a742b29b326b4e61092c59_Out_2, _Divide_59880824fa38412da03f531e578cce41_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3;
-            Unity_Smoothstep_float(0, _Property_23e8825f1b7846d5a7c69e14d2b12863_Out_0, _Subtract_1ba21244e7c6444cb4f951d7286b7852_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
+            Unity_Smoothstep_float(0, 1, _Divide_59880824fa38412da03f531e578cce41_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2;
-            Unity_Multiply_float_float(_Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
+            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Smoothstep_d26666b1596f49d0b3966168e204f474_Out_3, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3;
-            Unity_Branch_float(_Comparison_f67609417a9b4054a9576d0f39c5cadf_Out_2, _Split_34d10082dc344cf2b9180b8cfbfaef17_A_4, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0 = _AlphaBoost;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2;
-            Unity_Multiply_float_float(_Branch_709bef6aa01d45529eabb211e26dd6e3_Out_3, _Property_7a707e74444a4cfaa3f22dec76b3bbd9_Out_0, _Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0 = _AlphaBias;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
-            Unity_Add_float(_Multiply_8943cdc9011a43b99d76c55bee68fcc3_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2);
+            float _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
+            Unity_Branch_float(_Comparison_a776260605e44ccd831a96e0d445b5b3_Out_2, _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _Multiply_22f9717bc695490a819e37c98f2efe08_Out_2, _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_e8b5ac9e0461458eb05b1949d3c3bb9b_Out_0 = _FresnelPower;
@@ -4140,21 +4382,21 @@ Shader "shaderVFXGraph"
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
-            Unity_Multiply_float_float(_Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
-            Unity_Add_float(_Multiply_3e4e7431650344d4a51c484968028926_Out_2, _Property_43e41748db8c40ab8cce5f51241ce4d1_Out_0, _Add_7d5232a12f1644c59e74bda8e5537528_Out_2);
+            Unity_Multiply_float_float(_Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3, _FresnelEffect_08b0ce8fc55a44b886deea59ceeadbc0_Out_3, _Multiply_3e4e7431650344d4a51c484968028926_Out_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             #if defined(_FRESNEL)
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_7d5232a12f1644c59e74bda8e5537528_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Multiply_3e4e7431650344d4a51c484968028926_Out_2;
             #else
-            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Add_e34c25ca8f404e2c88ad86f4ad832767_Out_2;
+            float _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0 = _Branch_1d9eb136aeea4945b6fa8389f09cd252_Out_3;
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, 0);
+            float _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2;
+            Unity_Multiply_float_float(_Divide_4782f59bd3d940a0abbcc1430eb5ffc7_Out_2, _Fresnel_7f88e79b6e064bb2abff2d68db8292cc_Out_0, _Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float2 _Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0 = float2(_Multiply_74722c130c4e461696aa942e8cb53a7f_Out_2, 0);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float4 _SampleTexture2D_6f8157eadf4a4f179424674c7e985011_RGBA_0 = SAMPLE_TEXTURE2D(_Property_53bf16ec63664970a125c3d28a00d335_Out_0.tex, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.samplerstate, _Property_53bf16ec63664970a125c3d28a00d335_Out_0.GetTransformedUV(_Vector2_4778e9b46d674d70ad1f29c8d3ef3511_Out_0));
@@ -4174,16 +4416,19 @@ Shader "shaderVFXGraph"
             #endif
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
-            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, IN.VertexColor, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
+            float4 _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0 = float4((IN.VertexColor).x, (IN.VertexColor).x, (IN.VertexColor).x, 1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-            float _Split_6b22018cfb0342e4a139347b40431522_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
-            float _Split_6b22018cfb0342e4a139347b40431522_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
-            float _Split_6b22018cfb0342e4a139347b40431522_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
-            float _Split_6b22018cfb0342e4a139347b40431522_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            float4 _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2;
+            Unity_Multiply_float4_float4(_UseRemap_28b6025208a542ea81ab6979f4fa62f6_Out_0, _Vector4_1b6c062798fd4be588b9cfd6ea8b7411_Out_0, _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2);
             #endif
-            surface.Alpha = _Split_6b22018cfb0342e4a139347b40431522_A_4;
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float _Split_c9e912c3f79e437f801f1662d1890a33_R_1 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[0];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_G_2 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[1];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_B_3 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[2];
+            float _Split_c9e912c3f79e437f801f1662d1890a33_A_4 = _Multiply_507c508b58b448fba1520fb4be40a28f_Out_2[3];
+            #endif
+            surface.Alpha = _Split_c9e912c3f79e437f801f1662d1890a33_A_4;
             surface.AlphaClipThreshold = 0.5;
             return surface;
         }

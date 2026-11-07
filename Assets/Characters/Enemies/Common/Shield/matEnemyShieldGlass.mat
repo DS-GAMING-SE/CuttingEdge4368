@@ -74,7 +74,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaBias: 0.275
+    - _AlphaBias: 0.463
     - _AlphaBoost: 1.7
     - _BUILTIN_AlphaClip: 0
     - _BUILTIN_Blend: 0
