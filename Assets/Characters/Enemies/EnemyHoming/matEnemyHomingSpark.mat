@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: matPlayerHitSpark
+  m_Name: matEnemyHomingSpark
   m_Shader: {fileID: -6465566751694194690, guid: 32af7f4ce4e4a2c40af4323549eee36f, type: 3}
   m_ValidKeywords:
   - _BUILTIN_SURFACE_TYPE_TRANSPARENT
@@ -68,7 +68,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RemapTex:
-        m_Texture: {fileID: 2800000, guid: ab823a0f8beb707489dc9c048e3127f5, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2bffba93cf09a9f4a8a6d897d461d9a2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []

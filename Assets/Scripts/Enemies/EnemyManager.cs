@@ -64,6 +64,7 @@ namespace CuttingEdge.Enemies
 
             GameObject enemy = GameObject.Instantiate(prefab, Plane.enemyPlane.transform);
             enemy.transform.SetPositionAndRotation(position, Quaternion.LookRotation(-Plane.enemyPlane.transform.forward));
+            EffectManager.SimpleEffect(Resources.Load<GameObject>("EnemySpawnEffect"), position, Quaternion.identity);
 
             return enemy.GetComponent<EnemyController>();
         }

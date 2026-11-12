@@ -19,6 +19,7 @@ MonoBehaviour:
   serializedObjects:
   - {fileID: 8734318029455903979, guid: c9dcc994a97358b4094c721c9cd892f9, type: 3}
   - {fileID: 8300000, guid: 2fba5223d906faa42a5eb06e45947073, type: 3}
+  - {fileID: 7340540678542605024, guid: 18c0f7a0c7f2ae64a9cdf49f1390e285, type: 3}
   serializedInts: 
   serializedFloats:
   - 3

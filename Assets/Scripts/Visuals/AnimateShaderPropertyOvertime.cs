@@ -7,6 +7,10 @@ public class AnimateShaderPropertyOvertime : AnimateShaderProperty
     [SerializeField]
     protected float duration;
     private float timer;
+    private void OnEnable()
+    {
+        timer = 0f;
+    }
     void Update()
     {
         timer += Time.deltaTime;

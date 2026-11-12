@@ -13,6 +13,8 @@ namespace CuttingEdge.EntityStates.Enemy
         [ConfigSerializeField]
         public AudioClip projectileFireAudioClip { get { return (AudioClip)config.serializedObjects[1]; } }
         [ConfigSerializeField]
+        public GameObject shootEffectPrefab { get { return (GameObject)config.serializedObjects[2]; } }
+        [ConfigSerializeField]
         public float timeBetweenShots { get { return config.serializedFloats[1]; } }
         [ConfigSerializeField]
         public float movementSpeed { get { return config.serializedFloats[0]; } }
@@ -47,6 +49,7 @@ namespace CuttingEdge.EntityStates.Enemy
                 if (PlayerController.player)
                 {
                     ProjectileManager.FireProjectile(projectilePrefab, muzzleTransform.position, gameObject, PlayerController.player.transform);
+                    EffectManager.SimpleEffect(shootEffectPrefab, muzzleTransform.position, transform.rotation);
                     SoundEffectManager.PlaySound(projectileFireAudioClip);
                 }
             }

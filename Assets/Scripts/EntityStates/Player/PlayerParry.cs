@@ -71,6 +71,7 @@ namespace CuttingEdge.EntityStates.Player
                 projectile.speed *= 2f;
 
                 SoundEffectManager.PlaySound(Resources.Load<AudioClip>("Player/sfxParryHit"));
+                EffectManager.SimpleEffect(Resources.Load<GameObject>("ParryHitEffect"), transform.position, projectile.transform.rotation);
                 parrying = false;
                 healthComponent.onHit -= Parry;
                 PlayAnimation("Cut");

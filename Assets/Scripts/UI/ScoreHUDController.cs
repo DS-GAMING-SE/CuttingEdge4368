@@ -14,7 +14,7 @@ namespace CuttingEdge
         [SerializeField]
         private TextMeshProUGUI highScoreText;
         [SerializeField]
-        private GameObject highScoreBrokenEffect;
+        private Animator animator;
         
         private void OnEnable()
         {
@@ -40,8 +40,10 @@ namespace CuttingEdge
         }
         private void HighScoreBroken(int highScore)
         {
-            if (highScoreBrokenEffect) highScoreBrokenEffect.SetActive(true);
-            if (highScoreText) highScoreText.gameObject.SetActive(false);
+            if (animator)
+            {
+                animator.SetBool("HighScore", true);
+            }
         }
         public static string FormatScore(int score)
         {

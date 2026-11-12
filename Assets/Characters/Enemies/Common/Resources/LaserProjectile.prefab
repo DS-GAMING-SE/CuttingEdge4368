@@ -134,7 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
   defaultSpeed: 25
-  hitEffectPrefab: {fileID: 0}
+  hitEffectPrefab: {fileID: 2731453776801745007, guid: 76165e0792e2ce04d88d771c73fca796, type: 3}
   damage: 1
   parryable: 1
   homingRadius: 0
