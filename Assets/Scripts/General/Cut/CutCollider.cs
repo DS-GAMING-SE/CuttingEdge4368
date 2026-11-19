@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
+using UnityEngine.UIElements;
 
 namespace CuttingEdge
 {
@@ -49,6 +50,9 @@ namespace CuttingEdge
                 {
                     if (collectedCuts[i].TryCut(position, normal))
                     {
+                        EffectManager.SimpleEffect(Resources.Load<GameObject>("CutHitEffect"), 
+                            new UnityEngine.Plane(normal, position).ClosestPointOnPlane(collectedCuts[i].GetParent().transform.position), 
+                            Quaternion.LookRotation(direction)).transform.localScale = new Vector3(1f, 1, 6.5f);
                         cut = true;
                     }
                 }
